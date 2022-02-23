@@ -1,0 +1,46 @@
+{
+  "name": "{{ name }}",
+  "version": "0.1.0",
+  "description": "{{ description }}",
+  "author": "{{ author }}",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@headlessui/vue": "^1.4.1",
+    "@heroicons/vue": "^1.0.4",
+    "axios": "^0.21.4",
+    "core-js": "^3.6.5",
+    "vue": "^3.0.0",
+    "vue-cookie": "^1.1.4",
+    "vue-router": "^4.0.0-0",
+    "vuex": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-methods": "^7.14.5",
+    "@tailwindcss/aspect-ratio": "^0.2.1",
+    "@tailwindcss/forms": "^0.3.3",
+    "@tailwindcss/postcss7-compat": "^2.2.14",
+    "@tailwindcss/typography": "^0.4.1",
+    "@vue/cli-plugin-babel": "~4.5.0",
+    "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-vuex": "~4.5.0",
+    "@vue/cli-service": "~4.5.0",
+    "@vue/compiler-sfc": "^3.0.0",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "autoprefixer": "^9.8.6",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-vue": "^7.0.0",
+    "node-sass": "^4.14.1",
+    "postcss": "^7.0.36",
+    "prettier": "^2.2.1",
+    "sass-loader": "^8.0.2",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.14"
+  }
+}

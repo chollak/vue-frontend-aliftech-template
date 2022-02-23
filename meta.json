@@ -1,0 +1,26 @@
+{
+    "prompts": {
+      "name": {
+        "type": "string",
+        "required": true,
+        "label": "Project name"
+      },
+      "description": {
+        "type": "string",
+        "required": true,
+        "label": "Project description",
+        "default": "Yet Another Vue.js project in AlifTech"
+      },
+      "author": {
+        "type": "string",
+        "label": "Author",
+        "default": "Yet Another Developer in AlifTech"
+      },
+      "license": {
+        "type": "string",
+        "label": "License",
+        "default": "MIT"
+      }
+    },
+    "completeMessage": "{{#inPlace}}To get started:\n\n  npm install\n  npm run dev{{else}}To get started:\n\n  cd {{destDirName}}\n  npm install\n  npm run dev{{/inPlace}}"
+  }

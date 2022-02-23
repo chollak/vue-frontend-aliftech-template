@@ -1,0 +1,17 @@
+.at-panel-wrapper {
+  & > .at-panel-no-padding {
+    margin-left: -16px / 16px * 1rem;
+    margin-right: -16px / 16px * 1rem;
+    .at-table-wrapper {
+      box-shadow: none;
+    }
+  }
+}
+@media (min-width: 640px) {
+  .at-panel-wrapper {
+    & > .at-panel-no-padding {
+      margin-left: -24px / 16px * 1rem;
+      margin-right: -24px / 16px * 1rem;
+    }
+  }
+}

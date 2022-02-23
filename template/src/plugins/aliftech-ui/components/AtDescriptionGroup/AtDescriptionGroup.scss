@@ -1,0 +1,13 @@
+.at-panel-wrapper {
+  & > .at-description-group {
+    margin-bottom: 20px / 16px * -1rem;
+  }
+}
+
+@media (min-width: 640px) {
+  .at-panel-wrapper {
+    & > .at-description-group {
+      margin-bottom: 24px / 16px * -1rem;
+    }
+  }
+}
