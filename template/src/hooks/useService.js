@@ -77,7 +77,7 @@ export const useService = (callback) => {
 
   /**
    * Method to get all states with initial value
-   * @returns {{{{raw}}}}{{request: *[], alert: null, response: null, hasError: boolean, error: null, loading: boolean, errors: null}}{{{{/raw}}}}
+   * @returns { {request: *[], alert: null, response: null, hasError: boolean, error: null, loading: boolean, errors: null} }
    */
   const getState = () => ({
     response: null,
