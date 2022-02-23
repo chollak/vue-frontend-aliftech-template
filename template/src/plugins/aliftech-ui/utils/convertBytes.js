@@ -1,6 +1,6 @@
 /**
  * @param {number} bytes
- * @returns {{{{raw-loud}}}}{{terabyte: number, bytes, megabyte: number, kilobyte: number, gigabyte: number, key: string}}{{{{/raw-loud}}}}
+ * @returns {{{{raw}}}}{{ terabyte: number, bytes, megabyte: number, kilobyte: number, gigabyte: number, key: string }}{{{{/raw}}}}
  */
 export const convertBytes = (bytes) => {
   let max = Number.MAX_SAFE_INTEGER;
