@@ -1,4 +1,5 @@
-# frontend-boilerplate-vue
+# {{ name }}
+{{ description }}
 
 ## Project setup
 ```
