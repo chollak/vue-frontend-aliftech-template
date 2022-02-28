@@ -3,7 +3,7 @@ import { defineAsyncComponent } from 'vue';
 /**
  * Returns async Icon component from HeroIcons
  * @param {string|Object} icon
- * @returns {{Icon}}
+ * @returns { { Icon } }
  */
 export const getIconComponent = icon => {
   const iconName =
