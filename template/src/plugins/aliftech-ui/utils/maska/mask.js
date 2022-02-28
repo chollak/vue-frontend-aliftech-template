@@ -1,11 +1,6 @@
-import defaultTokens from "./tokens";
+import defaultTokens from './tokens';
 
-export default function mask(
-  value,
-  mask,
-  tokens = defaultTokens,
-  masked = true
-) {
+export default function mask(value, mask, tokens = defaultTokens, masked = true) {
   return processMask(mask).length > 1
     ? dynamic(mask)(value, mask, tokens, masked)
     : process(value, mask, tokens, masked);
@@ -22,8 +17,8 @@ function processMask(mask) {
 function dynamic(mask) {
   const masks = processMask(mask).sort((a, b) => a.length - b.length);
 
-  return function (value, mask, tokens, masked = true) {
-    const processed = masks.map((m) => process(value, m, tokens, false));
+  return function(value, mask, tokens, masked = true) {
+    const processed = masks.map(m => process(value, m, tokens, false));
     const last = processed.pop();
 
     for (let i in masks) {
@@ -32,28 +27,25 @@ function dynamic(mask) {
       }
     }
 
-    return ""; // empty masks
+    return ''; // empty masks
   };
 
   function checkMask(variant, mask, tokens) {
     for (let tok in tokens) {
       if (tokens[tok].escape) {
-        mask = mask.replace(new RegExp(tok + ".{1}", "g"), "");
+        mask = mask.replace(new RegExp(tok + '.{1}', 'g'), '');
       }
     }
 
-    return (
-      mask.split("").filter((el) => tokens[el] && tokens[el].pattern).length >=
-      variant.length
-    );
+    return mask.split('').filter(el => tokens[el] && tokens[el].pattern).length >= variant.length;
   }
 }
 
 function process(value, mask, tokens, masked = true) {
   let im = 0;
   let iv = 0;
-  let ret = "";
-  let rest = "";
+  let ret = '';
+  let rest = '';
 
   while (im < mask.length && iv < value.length) {
     let maskChar = mask[im];
@@ -99,7 +91,7 @@ function process(value, mask, tokens, masked = true) {
     // eslint-disable-line no-unmodified-loop-condition
     const maskCharRest = mask[im];
     if (tokens[maskCharRest]) {
-      rest = "";
+      rest = '';
       break;
     }
     rest += maskCharRest;

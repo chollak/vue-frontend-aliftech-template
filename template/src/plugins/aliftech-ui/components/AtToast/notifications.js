@@ -1,4 +1,4 @@
-import { ref } from "vue";
+import { ref } from 'vue';
 
 export const state = {
   notifications: ref([]),
@@ -6,15 +6,13 @@ export const state = {
 
 export const methods = {
   remove(id) {
-    const removedToast = state.notifications.value.findIndex(
-      (item) => item.id === id
-    );
+    const removedToast = state.notifications.value.findIndex(item => item.id === id);
     state.notifications.value.splice(removedToast, 1);
   },
   show(options = {}) {
-    options.title = options?.title || "";
-    options.subTitle = options?.subTitle || "";
-    options.type = options?.type || "info";
+    options.title = options?.title || '';
+    options.subTitle = options?.subTitle || '';
+    options.type = options?.type || 'info';
     options.duration = options?.duration || 5000;
     const newToast = {
       id: Math.random().toString(36) + new Date().toString(36),

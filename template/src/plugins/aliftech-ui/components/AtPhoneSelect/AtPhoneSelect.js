@@ -1,31 +1,31 @@
-import { h, ref, defineComponent } from "vue";
+import { h, ref, defineComponent } from 'vue';
 
-import { generatorId } from "../../utils";
-import InputElements from "../../mixins/props/InputElements";
+import { generatorId } from '../../utils';
+import InputElements from '../../mixins/props/InputElements';
 
-import AtInput from "../AtInput/AtInput";
-import AtInputAddOnSelect from "../AtInputAddOnSelect/AtInputAddOnSelect";
+import AtInput from '../AtInput/AtInput';
+import AtInputAddOnSelect from '../AtInputAddOnSelect/AtInputAddOnSelect';
 
 export default defineComponent({
-  name: "AtPhoneSelect",
+  name: 'AtPhoneSelect',
   props: {
     ...InputElements.props,
-    id: { type: String, default: () => generatorId("at-phone-select-") },
-    modelValue: { type: [String, Number], default: "" },
-    label: { type: String, default: "Номер телефона" },
-    placeholder: { type: String, default: "99 999 99 99" },
-    mask: { type: String, default: "## ### ## ##" },
+    id: { type: String, default: () => generatorId('at-phone-select-') },
+    modelValue: { type: [String, Number], default: '' },
+    label: { type: String, default: 'Номер телефона' },
+    placeholder: { type: String, default: '99 999 99 99' },
+    mask: { type: String, default: '## ### ## ##' },
   },
   setup(props) {
-    let country = ref("998");
+    let country = ref('998');
     let phone = ref(props.modelValue);
     if (String(props.modelValue).length === 12) {
       phone.value = props.modelValue.slice(3);
       country.value = props.modelValue.slice(0, 3);
     }
     const prefix = [
-      { value: "998", title: "🇺🇿 (+998)" },
-      { value: "992", title: "🇹🇯 (+992)" },
+      { value: '998', title: '🇺🇿 (+998)' },
+      { value: '992', title: '🇹🇯 (+992)' },
     ];
 
     return { country, phone, prefix };
@@ -43,14 +43,10 @@ export default defineComponent({
         error: this.error,
         success: this.success,
         disabled: this.disabled,
-        "onUpdate:modelValue": (value) => {
+        'onUpdate:modelValue': value => {
           this.phone = value;
-          this.$emit(
-            "update:modelValue",
-            this.country +
-              (/\s/g.test(value) ? value.replaceAll(" ", "") : value)
-          );
-          this.$emit("onChange", value);
+          this.$emit('update:modelValue', this.country + value);
+          this.$emit('onChange', value);
         },
       },
       {
@@ -59,14 +55,8 @@ export default defineComponent({
             items: this.prefix,
             modelValue: this.country,
             beforeInput: true,
-            "onUpdate:modelValue": (value) => {
-              this.$emit(
-                "update:modelValue",
-                value +
-                  (/\s/g.test(this.phone)
-                    ? this.phone.replaceAll(" ", "")
-                    : this.phone)
-              );
+            'onUpdate:modelValue': value => {
+              this.$emit('update:modelValue', value + this.phone);
               this.country = value;
             },
           }),

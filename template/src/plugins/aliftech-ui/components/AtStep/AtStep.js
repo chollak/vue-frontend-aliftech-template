@@ -1,27 +1,27 @@
-import { h } from "vue";
+import { h } from 'vue';
 
 const AtStep = (props, context) => {
   return props.title
     ? h(
-        "div",
+        'div',
         Object.assign(
           {
-            class: ["block"].concat(
-              "class" in context.attrs ? context.attrs.class : "",
-              "staticClass" in context.attrs ? context.attrs.staticClass : ""
+            class: ['block'].concat(
+              'class' in context.attrs ? context.attrs.class : '',
+              'staticClass' in context.attrs ? context.attrs.staticClass : ''
             ),
           },
           context.attrs,
           Object.assign(
             {},
-            "attrs" in context ? context.attrs : {},
-            { "at-step-title": props.title },
-            props.subTitle ? { "at-step-sub-title": props.subTitle } : {},
-            props.value ? { "at-step-value": props.value } : {},
-            props.icon ? { "at-step-icon": props.icon } : {}
+            'attrs' in context ? context.attrs : {},
+            { 'at-step-title': props.title },
+            props.subTitle ? { 'at-step-sub-title': props.subTitle } : {},
+            props.value ? { 'at-step-value': props.value } : {},
+            props.icon ? { 'at-step-icon': props.icon } : {}
           )
         ),
-        "default" in context.slots
+        'default' in context.slots
           ? context.slots.default({
               title: props.title,
               subTitle: props.subTitle,
@@ -34,10 +34,10 @@ const AtStep = (props, context) => {
 };
 
 AtStep.props = {
-  title: { type: String, default: "" },
-  subTitle: { type: String, default: "" },
-  value: { type: [String, Number], default: "" },
-  icon: { type: String, default: "" },
+  title: { type: String, default: '' },
+  subTitle: { type: String, default: '' },
+  value: { type: [String, Number], default: '' },
+  icon: { type: String, default: '' },
 };
 
 export default AtStep;

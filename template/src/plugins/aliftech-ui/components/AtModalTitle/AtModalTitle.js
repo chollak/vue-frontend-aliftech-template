@@ -1,15 +1,15 @@
-import { h } from "vue";
+import { h } from 'vue';
 
 const AtModalTitle = (props, ctx) => {
   return h(
-    "h3",
+    'h3',
     Object.assign({}, ctx.attrs, {
-      class: ["text-lg leading-6 font-medium text-gray-900 mb-2"].concat(
-        "class" in ctx.attrs ? ctx.attrs.class : "",
-        "staticClass" in ctx.attrs ? ctx.attrs.staticClass : ""
+      class: ['text-lg leading-6 font-medium text-gray-900 mb-2'].concat(
+        'class' in ctx.attrs ? ctx.attrs.class : '',
+        'staticClass' in ctx.attrs ? ctx.attrs.staticClass : ''
       ),
     }),
-    "default" in ctx.slots ? ctx.slots.default() : null
+    'default' in ctx.slots ? ctx.slots.default() : null
   );
 };
 

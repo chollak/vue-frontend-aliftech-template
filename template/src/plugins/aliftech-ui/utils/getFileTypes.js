@@ -1,20 +1,18 @@
-import { checkType } from "./checkType";
-import { hasOwnProperty } from "./hasOwnProperty";
-import { callbackIterableArray } from "./callbackIterableArray";
-import { callbackIterableObject } from "./callbackIterableObject";
-import { mimes } from "../constants/mimes";
+import { checkType } from './checkType';
+import { hasOwnProperty } from './hasOwnProperty';
+import { callbackIterableArray } from './callbackIterableArray';
+import { callbackIterableObject } from './callbackIterableObject';
+import { mimes } from '../constants/mimes';
 
-export const getFileTypes = (mime) => {
+export const getFileTypes = mime => {
   const types = new Set();
   const clearMime = new Set();
   const parser = (el, container, mimeContainer) => {
-    if (checkType(el, "string")) {
-      el.split(",").forEach((type) => {
+    if (checkType(el, 'string')) {
+      el.split(',').forEach(type => {
         const str = type.trim();
-        switch (
-          str.includes("/") ? "type" : str.includes(".") ? "expansion" : ""
-        ) {
-          case "type":
+        switch (str.includes('/') ? 'type' : str.includes('.') ? 'expansion' : '') {
+          case 'type':
             {
               if (hasOwnProperty(mimes.types, str)) {
                 container.add(mimes.types[str]);
@@ -22,7 +20,7 @@ export const getFileTypes = (mime) => {
               }
             }
             break;
-          case "expansion": {
+          case 'expansion': {
             if (hasOwnProperty(mimes.expansion, str)) {
               container.add(mimes.expansion[str]);
               mimeContainer.add(str);
@@ -32,24 +30,22 @@ export const getFileTypes = (mime) => {
       });
     }
 
-    if (checkType(el, "array")) {
-      callbackIterableArray(el, (item) => parser(item, container));
+    if (checkType(el, 'array')) {
+      callbackIterableArray(el, item => parser(item, container));
     }
 
-    if (checkType(el, "object")) {
-      callbackIterableObject(el, (show, item) =>
-        !show ? null : parser(item, container)
-      );
+    if (checkType(el, 'object')) {
+      callbackIterableObject(el, (show, item) => (!show ? null : parser(item, container)));
     }
   };
 
   parser(mime, types, clearMime);
 
-  const text = Array.from(types).join(", ");
+  const text = Array.from(types).join(', ');
   return {
-    text: Array.from(types).join(", "),
-    mime: Array.from(clearMime).join(", "),
-    hash: text.split(", ").reduce((acc, el) => {
+    text: Array.from(types).join(', '),
+    mime: Array.from(clearMime).join(', '),
+    hash: text.split(', ').reduce((acc, el) => {
       acc[el] = true;
       return acc;
     }, {}),

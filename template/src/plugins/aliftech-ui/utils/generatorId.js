@@ -3,5 +3,4 @@
  * @param {string|number} key
  * @returns {string}
  */
-export const generatorId = (key) =>
-  key + Math.floor(Date.now() * Math.random()).toString(16);
+export const generatorId = key => key + Math.floor(Date.now() * Math.random()).toString(16);

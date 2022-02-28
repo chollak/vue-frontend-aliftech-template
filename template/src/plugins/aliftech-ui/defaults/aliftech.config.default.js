@@ -1,4 +1,4 @@
-const primaryColor = "indigo";
+const primaryColor = 'indigo';
 
 module.exports = {
   primaryBackgroundColor: primaryColor,

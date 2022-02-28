@@ -1,18 +1,18 @@
 const tokens = {
-  "#": { pattern: /\d/ },
+  '#': { pattern: /\d/ },
   X: { pattern: /[0-9a-zA-Z]/ },
   S: { pattern: /[a-zA-Z]/ },
-  A: { pattern: /[a-zA-Z]/, transform: (v) => v.toLocaleUpperCase() },
-  a: { pattern: /[a-zA-Z]/, transform: (v) => v.toLocaleLowerCase() },
-  "!": { escape: true },
+  A: { pattern: /[a-zA-Z]/, transform: v => v.toLocaleUpperCase() },
+  a: { pattern: /[a-zA-Z]/, transform: v => v.toLocaleLowerCase() },
+  '!': { escape: true },
 };
 
 function maskit(value, mask, masked = true, tokens) {
-  value = value || "";
-  mask = mask || "";
+  value = value || '';
+  mask = mask || '';
   let iMask = 0;
   let iValue = 0;
-  let output = "";
+  let output = '';
   while (iMask < mask.length && iValue < value.length) {
     let cMask = mask[iMask];
     const masker = tokens[cMask];
@@ -33,11 +33,11 @@ function maskit(value, mask, masked = true, tokens) {
       iMask++;
     }
   }
-  let restOutput = "";
+  let restOutput = '';
   while (iMask < mask.length && masked) {
     const cMask = mask[iMask];
     if (tokens[cMask]) {
-      restOutput = "";
+      restOutput = '';
       break;
     }
     restOutput += cMask;
@@ -48,22 +48,17 @@ function maskit(value, mask, masked = true, tokens) {
 
 function dynamicMask(maskit, masks, tokens) {
   masks = masks.sort((a, b) => a.length - b.length);
-  return function (value, mask, masked = true) {
+  return function(value, mask, masked = true) {
     let i = 0;
     while (i < masks.length) {
       const currentMask = masks[i];
       i++;
       const nextMask = masks[i];
-      if (
-        !(
-          nextMask &&
-          maskit(value, nextMask, true, tokens).length > currentMask.length
-        )
-      ) {
+      if (!(nextMask && maskit(value, nextMask, true, tokens).length > currentMask.length)) {
         return maskit(value, currentMask, masked, tokens);
       }
     }
-    return "";
+    return '';
   };
 }
 
@@ -74,9 +69,9 @@ function masker(value, mask, masked = true, tokens) {
 }
 
 function generateEvent(name) {
-  if (typeof document !== "undefined") {
+  if (typeof document !== 'undefined') {
     try {
-      const event = document.createEvent("Event");
+      const event = document.createEvent('Event');
       event.initEvent(name, true, true);
       return event;
     } catch (e) {
@@ -86,58 +81,51 @@ function generateEvent(name) {
   return undefined;
 }
 
-function directive(el, binding) {
-  const input = generateEvent("input");
-  if (input !== undefined) {
-    let config = binding.value;
-    if (Array.isArray(config) || typeof config === "string") {
-      config = {
-        mask: config,
-        tokens: tokens,
-      };
-    }
-    if (el.tagName.toLocaleUpperCase() !== "INPUT") {
-      const els = el.getElementsByTagName("input");
-      if (els.length !== 1) {
-        throw new Error(
-          "v-mask directive requires 1 input, found " + els.length
-        );
-      } else {
-        el = els[0];
+const directive = {
+  beforeMount: (el, binding) => {
+    const input = generateEvent('input');
+    if (input !== undefined) {
+      let config = binding.value;
+      if (Array.isArray(config) || typeof config === 'string') {
+        config = {
+          mask: config,
+          tokens: tokens,
+        };
       }
-    }
-    el.oninput = function (evt) {
-      const event = generateEvent("input");
-      if (event !== undefined) {
-        if (!evt.isTrusted) return;
-        let position = el.selectionEnd;
-        const digit = el.value[position - 1];
-        el.value = masker(el.value, config.mask, true, config.tokens);
-        while (
-          position < el.value.length &&
-          el.value.charAt(position - 1) !== digit
-        ) {
-          position++;
+      if (el.tagName.toLocaleUpperCase() !== 'INPUT') {
+        const els = el.getElementsByTagName('input');
+        if (els.length !== 1) {
+          throw new Error('v-mask directive requires 1 input, found ' + els.length);
+        } else {
+          el = els[0];
         }
-        if (el === document.activeElement) {
-          el.setSelectionRange(position, position);
-          setTimeout(function () {
+      }
+      el.oninput = function(evt) {
+        const event = generateEvent('input');
+        if (event !== undefined) {
+          if (!evt.isTrusted) return;
+          let position = el.selectionEnd;
+          const digit = el.value[position - 1];
+          el.value = masker(el.value, config.mask, true, config.tokens);
+          while (position < el.value.length && el.value.charAt(position - 1) !== digit) {
+            position++;
+          }
+          if (el === document.activeElement) {
             el.setSelectionRange(position, position);
-          }, 0);
+            setTimeout(function() {
+              el.setSelectionRange(position, position);
+            }, 0);
+          }
+          el.dispatchEvent(event);
         }
-        el.dispatchEvent(event);
+      };
+      const newDisplay = masker(el.value, config.mask, true, config.tokens);
+      if (newDisplay !== el.value) {
+        el.value = newDisplay;
+        el.dispatchEvent(input);
       }
-    };
-    const newDisplay = masker(el.value, config.mask, true, config.tokens);
-    if (newDisplay !== el.value) {
-      el.value = newDisplay;
-      el.dispatchEvent(input);
     }
-  }
-}
-
-module.exports = {
-  tokens,
-  directive,
-  masker,
+  },
 };
+
+export { tokens, directive, masker };

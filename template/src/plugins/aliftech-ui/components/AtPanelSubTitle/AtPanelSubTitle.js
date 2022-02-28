@@ -1,13 +1,11 @@
-import { h } from "vue";
+import { h } from 'vue';
 
 const AtPanelSubTitle = (props, ctx) => {
-  return "default" in ctx.slots
+  return 'default' in ctx.slots
     ? h(
-        "p",
+        'p',
         Object.assign({}, ctx.attrs, {
-          class: ["mt-1 text-sm leading-5 text-gray-500"].concat(
-            "class" in ctx.attrs ? ctx.attrs.class : ""
-          ),
+          class: ['mt-1 text-sm leading-5 text-gray-500'].concat('class' in ctx.attrs ? ctx.attrs.class : ''),
         }),
         ctx.slots.default()
       )

@@ -1,13 +1,13 @@
-import directive from "./directive";
-import mask from "./mask";
-import Maska from "./maska";
-import tokens from "./tokens";
+import directive from './directive';
+import mask from './mask';
+import Maska from './maska';
+import tokens from './tokens';
 
 function install(Vue) {
-  Vue.directive("maska", directive);
+  Vue.directive('maska', directive);
 }
 // Install by default if included from script tag (only Vue 2)
-if (typeof window !== "undefined" && window.Vue && window.Vue.use) {
+if (typeof window !== 'undefined' && window.Vue && window.Vue.use) {
   window.Vue.use(install);
 }
 

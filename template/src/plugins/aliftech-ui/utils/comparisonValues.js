@@ -1,5 +1,5 @@
-import { checkType } from "./checkType";
-import { hasOwnProperty } from "./hasOwnProperty";
+import { checkType } from './checkType';
+import { hasOwnProperty } from './hasOwnProperty';
 
 /**
  * Compare an array
@@ -26,23 +26,20 @@ export const comparisonValues = (firstValue, secondValue) => {
   if (firstValue === secondValue) return true;
 
   /* Checking dates */
-  let firstValueType = checkType(firstValue, "date");
-  let secondValueType = checkType(secondValue, "date");
-  if (firstValueType && secondValueType)
-    return firstValue.getTime() === secondValue.getTime();
+  let firstValueType = checkType(firstValue, 'date');
+  let secondValueType = checkType(secondValue, 'date');
+  if (firstValueType && secondValueType) return firstValue.getTime() === secondValue.getTime();
 
   /* Checking Arrays */
-  firstValueType = checkType(firstValue, "array");
-  secondValueType = checkType(secondValue, "array");
-  if (firstValueType && secondValueType)
-    return compareArray(firstValue, secondValue);
+  firstValueType = checkType(firstValue, 'array');
+  secondValueType = checkType(secondValue, 'array');
+  if (firstValueType && secondValueType) return compareArray(firstValue, secondValue);
 
   /* Checking Objects */
-  firstValueType = checkType(firstValue, "object");
-  secondValueType = checkType(secondValue, "object");
+  firstValueType = checkType(firstValue, 'object');
+  secondValueType = checkType(secondValue, 'object');
   if (firstValueType && secondValueType) {
-    if (Object.keys(firstValue).length !== Object.keys(secondValue).length)
-      return false;
+    if (Object.keys(firstValue).length !== Object.keys(secondValue).length) return false;
     if (Object.is(firstValue, secondValue)) return true;
     for (const key in firstValue) {
       const checkKeyA = hasOwnProperty(firstValue, key, false);

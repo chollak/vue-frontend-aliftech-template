@@ -1,9 +1,9 @@
-import { h, ref } from "vue";
-import PaginationLink from "./components/PaginationLink";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/solid/esm";
-import useGeneratePages from "../../hooks/useGeneratePages";
+import { h, ref } from 'vue';
+import PaginationLink from './components/PaginationLink';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/solid/esm';
+import useGeneratePages from '../../hooks/useGeneratePages';
 
-const getPage = (value) => {
+const getPage = value => {
   const parsed = parseInt(value, 10);
   if (Number.isInteger(parsed)) {
     return parsed;
@@ -16,27 +16,26 @@ const AtPagination = (props, ctx) => {
 
   const { generatePages } = useGeneratePages();
 
-  const changePage = (page) => {
+  const changePage = page => {
     nowPage.value = page;
-    ctx.emit("update:modelValue", page);
+    ctx.emit('update:modelValue', page);
   };
 
   const pages = () => {
-    return Number.isInteger(getPage(nowPage.value)) &&
-      Number.isInteger(getPage(props.total))
+    return Number.isInteger(getPage(nowPage.value)) && Number.isInteger(getPage(props.total))
       ? generatePages(getPage(nowPage.value), getPage(props.total))
       : [];
   };
 
   nowPage.value = getPage(props.modelValue || 1);
 
-  return h("nav", { class: ["relative z-0 inline-flex shadow-sm"] }, [
+  return h('nav', { class: ['relative z-0 inline-flex shadow-sm'] }, [
     h(
       PaginationLink,
       {
-        class: "inline-flex px-2.5 rounded-l-md",
+        class: 'inline-flex px-2.5 rounded-l-md',
         selected: false,
-        onClick: (e) => {
+        onClick: e => {
           e.stopPropagation();
           const num = getPage(nowPage.value);
           if (Number.isInteger(num)) {
@@ -49,9 +48,7 @@ const AtPagination = (props, ctx) => {
       },
       {
         default: () => {
-          return h(ChevronLeftIcon, {
-            style: [{ width: "16px", height: "16px" }],
-          });
+          return h(ChevronLeftIcon, { style: [{ width: '16px', height: '16px' }] });
         },
       }
     ),
@@ -60,27 +57,21 @@ const AtPagination = (props, ctx) => {
         PaginationLink,
         {
           class:
-            page.title === "..."
-              ? "-ml-px inline-flex px-4"
-              : [
-                  "-ml-px px-4",
-                  {
-                    "hidden md:inline-flex": page.hidden,
-                    "inline-flex": !page.hidden,
-                  },
-                ],
+            page.title === '...'
+              ? '-ml-px inline-flex px-4'
+              : ['-ml-px px-4', { 'hidden md:inline-flex': page.hidden, 'inline-flex': !page.hidden }],
           selected: nowPage.value === page.page,
-          onClick: (e) => {
+          onClick: e => {
             e.stopPropagation();
             if (page.page !== nowPage.value) {
               changePage(page.page);
             }
           },
-          key: "at-pagination-button-page-" + index,
+          key: 'at-pagination-button-page-' + index,
         },
         {
           default: () => {
-            return page.title === "..." ? page.title : page.page;
+            return page.title === '...' ? page.title : page.page;
           },
         }
       )
@@ -88,9 +79,9 @@ const AtPagination = (props, ctx) => {
     h(
       PaginationLink,
       {
-        class: "inline-flex px-2.5 -ml-px rounded-r-md",
+        class: 'inline-flex px-2.5 -ml-px rounded-r-md',
         selected: false,
-        onClick: (e) => {
+        onClick: e => {
           e.stopPropagation();
           const num = getPage(nowPage.value);
           const numTotal = getPage(props.total);
@@ -104,9 +95,7 @@ const AtPagination = (props, ctx) => {
       },
       {
         default: () => {
-          return h(ChevronRightIcon, {
-            style: [{ width: "16px", height: "16px" }],
-          });
+          return h(ChevronRightIcon, { style: [{ width: '16px', height: '16px' }] });
         },
       }
     ),

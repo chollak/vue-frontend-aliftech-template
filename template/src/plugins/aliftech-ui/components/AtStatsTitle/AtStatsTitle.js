@@ -1,12 +1,12 @@
-import { h } from "vue";
+import { h } from 'vue';
 
 const AtStatsTitle = (props, context) => {
-  return "default" in context.slots
+  return 'default' in context.slots
     ? h(
-        "dt",
+        'dt',
         Object.assign({}, context.attrs, {
-          class: ["text-sm font-medium text-gray-500 truncate"].concat(
-            "class" in context.attrs ? context.attrs.class : ""
+          class: ['text-sm font-medium text-gray-500 truncate'].concat(
+            'class' in context.attrs ? context.attrs.class : ''
           ),
         }),
         context.slots.default()

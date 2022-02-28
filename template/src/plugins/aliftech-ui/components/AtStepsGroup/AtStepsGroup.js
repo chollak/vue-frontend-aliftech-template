@@ -1,15 +1,10 @@
-import { h, ref, computed, defineComponent } from "vue";
-import {
-  transformToBool,
-  generatorId,
-  deepCopy,
-  comparisonValues,
-} from "../../utils/";
-import AtSteps from "../AtSteps/AtSteps";
+import { h, ref, computed, defineComponent } from 'vue';
+import { transformToBool, generatorId, deepCopy, comparisonValues } from '../../utils/';
+import AtSteps from '../AtSteps/AtSteps';
 
 export default defineComponent({
-  name: "AtStepsGroup",
-  emits: ["update:modelValue"],
+  name: 'AtStepsGroup',
+  emits: ['update:modelValue'],
   props: {
     disabled: { type: [String, Boolean, Number], default: false },
   },
@@ -24,75 +19,58 @@ export default defineComponent({
 
     function destructSteps() {
       let elements = { list: [], hash: {}, config: [] };
-      if ("default" in slots) {
+      if ('default' in slots) {
         elements = slots.default().reduce(
           (acc, element) => {
-            if (Object.prototype.toString.call(element) === "[object Object]") {
+            if (Object.prototype.toString.call(element) === '[object Object]') {
               // Получение инф. о теге
               let tag = undefined;
-              if ("tag" in element) {
+              if ('tag' in element) {
                 tag = element.tag;
               } else {
-                if ("props" in element) {
+                if ('props' in element) {
                   tag = element.props;
                 }
               }
               // Получение инф. о теге - END
               // Получение аттрибутов
               let attrs = undefined;
-              if (
-                "attrs" in element &&
-                Object.prototype.toString.call(element.attrs) ===
-                  "[object Object]"
-              ) {
+              if ('attrs' in element && Object.prototype.toString.call(element.attrs) === '[object Object]') {
                 attrs = Object.assign({}, attrs, element.attrs);
               } else {
                 if (tag) {
-                  if (
-                    "title" in tag ||
-                    "value" in tag ||
-                    "sub-title" in tag ||
-                    "subTitle" in tag ||
-                    "icon" in tag
-                  ) {
+                  if ('title' in tag || 'value' in tag || 'sub-title' in tag || 'subTitle' in tag || 'icon' in tag) {
                     attrs = {};
                   }
-                  if ("title" in tag) {
-                    attrs["at-step-title"] = tag.title;
+                  if ('title' in tag) {
+                    attrs['at-step-title'] = tag.title;
                   }
-                  if ("value" in tag) {
-                    attrs["at-step-value"] = tag.value;
+                  if ('value' in tag) {
+                    attrs['at-step-value'] = tag.value;
                   }
-                  if ("sub-title" in tag) {
-                    attrs["at-step-sub-title"] = tag["sub-title"];
+                  if ('sub-title' in tag) {
+                    attrs['at-step-sub-title'] = tag['sub-title'];
                   }
-                  if ("subTitle" in tag) {
-                    attrs["at-step-sub-title"] = tag.subTitle;
+                  if ('subTitle' in tag) {
+                    attrs['at-step-sub-title'] = tag.subTitle;
                   }
-                  if ("icon" in tag) {
-                    attrs["at-step-icon"] = tag.icon;
+                  if ('icon' in tag) {
+                    attrs['at-step-icon'] = tag.icon;
                   }
                 }
               }
               // Получение аттрибутов - END
-              if (tag && attrs && "at-step-title" in attrs) {
-                const value =
-                  "at-step-value" in attrs
-                    ? attrs["at-step-value"]
-                    : generatorId("at-steps-");
-                const config = { title: attrs["at-step-title"], value };
-                if ("at-step-sub-title" in attrs) {
-                  config.subTitle = attrs["at-step-sub-title"];
+              if (tag && attrs && 'at-step-title' in attrs) {
+                const value = 'at-step-value' in attrs ? attrs['at-step-value'] : generatorId('at-steps-');
+                const config = { title: attrs['at-step-title'], value };
+                if ('at-step-sub-title' in attrs) {
+                  config.subTitle = attrs['at-step-sub-title'];
                 }
-                if ("at-step-icon" in attrs) {
-                  config.icon = attrs["at-step-icon"];
+                if ('at-step-icon' in attrs) {
+                  config.icon = attrs['at-step-icon'];
                 }
                 acc.config.push(config);
-                const node = h(
-                  "div",
-                  { class: "pt-6", "at-step": true, "at-step-value": value },
-                  [element]
-                );
+                const node = h('div', { class: 'pt-6', 'at-step': true, 'at-step-value': value }, [element]);
                 acc.list.push(node);
                 acc.hash[value] = node;
               }
@@ -113,9 +91,7 @@ export default defineComponent({
         }
       }
       stepsHash.value = deepCopy(elements.hash);
-      selectedHashChildren.value = deepCopy(
-        stepsHash.value[stepsConfig.value[0].value]
-      );
+      selectedHashChildren.value = deepCopy(stepsHash.value[stepsConfig.value[0].value]);
     }
 
     destructSteps();
@@ -131,12 +107,12 @@ export default defineComponent({
   },
   render() {
     return this.steps.length
-      ? h("div", { class: "block w-full" }, [
+      ? h('div', { class: 'block w-full' }, [
           this.stepsConfig.length
             ? h(AtSteps, {
                 modelValue: this.selected,
                 steps: deepCopy(this.stepsConfig),
-                "onUpdate:modelValue": (value) => {
+                'onUpdate:modelValue': value => {
                   if (this.selected !== value && !this.hasDisabled) {
                     this.selected = value;
                     this.selectedHashChildren = this.stepsHash[this.selected];
@@ -144,24 +120,15 @@ export default defineComponent({
                 },
               })
             : null,
-          Object.prototype.toString.call(this.stepsHash) ===
-            "[object Object]" && this.selected in this.stepsHash
+          Object.prototype.toString.call(this.stepsHash) === '[object Object]' && this.selected in this.stepsHash
             ? this.selectedHashChildren
-            : this.steps.find((step) => {
-                if (
-                  Object.prototype.toString.call(step.attrs) ===
-                    "[object Object]" &&
-                  "attrs" in step
-                ) {
+            : this.steps.find(step => {
+                if (Object.prototype.toString.call(step.attrs) === '[object Object]' && 'attrs' in step) {
                   if (
-                    Object.prototype.toString.call(step.attrs) ===
-                      "[object Object]" &&
-                    "at-step-value" in step.attrs
+                    Object.prototype.toString.call(step.attrs) === '[object Object]' &&
+                    'at-step-value' in step.attrs
                   ) {
-                    return comparisonValues(
-                      step.attrs["at-step-value"],
-                      this.selected
-                    );
+                    return comparisonValues(step.attrs['at-step-value'], this.selected);
                   }
                 }
                 return false;

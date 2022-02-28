@@ -1,2 +1,1 @@
-export const callbackIterableArray = (array, callback) =>
-  array.forEach(callback);
+export const callbackIterableArray = (array, callback) => array.forEach(callback);

@@ -1,9 +1,9 @@
-import { h, defineComponent } from "vue";
-import SidebarItemLink from "./SidebarItemLink";
-import { sidebarItemProps } from "./sidebarMixins";
+import { h, defineComponent } from 'vue';
+import SidebarItemLink from './SidebarItemLink';
+import { sidebarItemProps } from './sidebarMixins';
 
 export const SidebarItem = defineComponent({
-  name: "AtSidebarItem",
+  name: 'AtSidebarItem',
   props: { ...sidebarItemProps.props },
   data() {
     return {
@@ -20,7 +20,7 @@ export const SidebarItem = defineComponent({
       item: this.item,
       collapsed: this.isCollapseItem,
       active: this.active,
-      routeName: this?.$route?.name ?? "",
+      routeName: this?.$route?.name ?? '',
       onClick: () => this.toggleItemCollapse(),
     });
   },

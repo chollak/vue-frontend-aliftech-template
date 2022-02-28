@@ -3,14 +3,11 @@
  * @param {Object} obj - Parameters query object
  * @returns {Object} - Query object with only existing parameters
  */
-export const clearQueryParams = (obj) => {
+export const clearQueryParams = obj => {
   const object = { ...obj };
   let i;
   for (i in object) {
-    if (
-      object?.[i] === "" ||
-      (typeof object?.[i] === "object" && !object?.[i]?.length)
-    ) {
+    if (object?.[i] === '' || (typeof object?.[i] === 'object' && !object?.[i]?.length)) {
       delete object?.[i];
     }
   }

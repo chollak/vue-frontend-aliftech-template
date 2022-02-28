@@ -1,13 +1,11 @@
-import Maska from "./maska";
-import { isString } from "./utils";
+import Maska from './maska';
+import { isString } from './utils';
 
 function getOpts(mask) {
   const opts = {};
 
   if (mask.mask) {
-    opts.mask = Array.isArray(mask.mask)
-      ? JSON.stringify(mask.mask)
-      : mask.mask;
+    opts.mask = Array.isArray(mask.mask) ? JSON.stringify(mask.mask) : mask.mask;
     opts.tokens = mask.tokens ? { ...mask.tokens } : {};
   } else {
     opts.mask = Array.isArray(mask) ? JSON.stringify(mask) : mask;
@@ -19,13 +17,8 @@ function getOpts(mask) {
 function needUpdate(mask) {
   return !(
     (isString(mask.value) && mask.value === mask.oldValue) ||
-    (Array.isArray(mask.value) &&
-      JSON.stringify(mask.value) === JSON.stringify(mask.oldValue)) ||
-    (mask.value &&
-      mask.value.mask &&
-      mask.oldValue &&
-      mask.oldValue.mask &&
-      mask.value.mask === mask.oldValue.mask)
+    (Array.isArray(mask.value) && JSON.stringify(mask.value) === JSON.stringify(mask.oldValue)) ||
+    (mask.value && mask.value.mask && mask.oldValue && mask.oldValue.mask && mask.value.mask === mask.oldValue.mask)
   );
 }
 

@@ -1,27 +1,27 @@
 export const getSpinnerClass = (color, size) => {
   let textColor;
-  let hw = "h-5 w-5";
+  let hw = 'h-5 w-5';
 
   switch (color) {
-    case "primary":
-    case "success":
-    case "danger":
-      textColor = "text-white";
+    case 'primary':
+    case 'success':
+    case 'danger':
+      textColor = 'text-white';
       break;
-    case "secondary":
-      textColor = "text-indigo-700";
+    case 'secondary':
+      textColor = 'text-indigo-700';
       break;
-    case "warning":
-      textColor = "text-black";
+    case 'warning':
+      textColor = 'text-black';
       break;
     default:
-      textColor = "text-gray-700";
+      textColor = 'text-gray-700';
       break;
   }
 
-  if (size === "xs" || size === "sm") {
-    hw = "h-4 w-4 ";
+  if (size === 'xs' || size === 'sm') {
+    hw = 'h-4 w-4 ';
   }
 
-  return textColor + " " + hw;
+  return textColor + ' ' + hw;
 };

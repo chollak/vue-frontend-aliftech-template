@@ -1,6 +1,6 @@
-const install = require("./install"); // Файл установки
+const install = require('./install'); // Файл установки
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
   value: true,
 });
 

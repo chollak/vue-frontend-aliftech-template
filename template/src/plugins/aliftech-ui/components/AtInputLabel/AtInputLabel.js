@@ -1,5 +1,5 @@
-import { h } from "vue";
-import { transformToBool } from "../../utils";
+import { h } from 'vue';
+import { transformToBool } from '../../utils';
 
 const AtInputLabel = (props, ctx) => {
   let slotParams = {
@@ -9,20 +9,16 @@ const AtInputLabel = (props, ctx) => {
     success: transformToBool(props.success),
   };
   const corner =
-    "corner" in ctx.slots
-      ? h(
-          "span",
-          { class: "text-sm leading-5 text-gray-500" },
-          ctx.slots.corner(slotParams)
-        )
+    'corner' in ctx.slots
+      ? h('span', { class: 'text-sm leading-5 text-gray-500' }, ctx.slots.corner(slotParams))
       : null;
   slotParams = Object.assign(
     {},
     slotParams,
-    "corner" in ctx.slots
+    'corner' in ctx.slots
       ? {
           corner: {
-            name: "AtInputLabelCorner",
+            name: 'AtInputLabelCorner',
             render() {
               return corner;
             },
@@ -30,29 +26,26 @@ const AtInputLabel = (props, ctx) => {
         }
       : {}
   );
-  if ("label" in ctx.slots) {
+  if ('label' in ctx.slots) {
     return ctx.slots.label(slotParams);
   }
   const titleElement = h(
-    "span",
+    'span',
     {
       class: [
-        "text-sm font-medium leading-5 text-gray-700",
-        {
-          "text-red-600": slotParams.error,
-          "text-green-500": slotParams.success,
-        },
+        'text-sm font-medium leading-5 text-gray-700',
+        { 'text-red-600': slotParams.error, 'text-green-500': slotParams.success },
       ],
     },
-    "default" in ctx.slots ? ctx.slots.default(slotParams) : props.title
+    'default' in ctx.slots ? ctx.slots.default(slotParams) : props.title
   );
-  return "default" in ctx.slots || props.title
+  return 'default' in ctx.slots || props.title
     ? h(
-        "span",
+        'span',
         Object.assign({}, ctx.attrs, {
-          class: ["mb-1", { "flex justify-between": corner }].concat(
-            "class" in ctx.attrs ? ctx.attrs.class : "",
-            "staticClass" in ctx.attrs ? ctx.attrs.staticClass : ""
+          class: ['mb-1', { 'flex justify-between': corner }].concat(
+            'class' in ctx.attrs ? ctx.attrs.class : '',
+            'staticClass' in ctx.attrs ? ctx.attrs.staticClass : ''
           ),
         }),
         [corner ? [titleElement, corner] : titleElement]
@@ -61,7 +54,7 @@ const AtInputLabel = (props, ctx) => {
 };
 
 AtInputLabel.props = {
-  title: { type: String, default: "" },
+  title: { type: String, default: '' },
   error: { type: [Boolean, String, Number], default: false },
   success: { default: false },
 };
