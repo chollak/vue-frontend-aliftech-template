@@ -73,8 +73,7 @@ import { reactive, toRefs } from 'vue';
  * @param {Function} callback - axios callback
  * @returns {Result}
  */
-export const useService = (callback) => {
-
+export const useService = callback => {
   /**
    * Method to get all states with initial value
    * @returns { {request: *[], alert: null, response: null, hasError: boolean, error: null, loading: boolean, errors: null} }
@@ -98,6 +97,7 @@ export const useService = (callback) => {
     Object.assign(data, { ...getState() });
   };
 
+  // TODO: refactor
   const setError = (e, title = null) => {
     if (Object.prototype.toString.call(e) === '[object Object]' && 'errors' in e) {
       data.errors = e.errors;
@@ -105,6 +105,9 @@ export const useService = (callback) => {
     } else if (Object.prototype.toString.call(e) === '[object Object]' && 'message' in e) {
       setAlert({ message: e.message, type: 'danger', title: title });
       data.error = { ...(e || {}) };
+      return;
+    } else if (Object.prototype.toString.call(e) === '[object Object]') {
+      data.errors = { ...e };
       return;
     } else if (Object.prototype.toString.call(e) === '[object String]') {
       setAlert({ message: e, type: 'danger', title: title });
@@ -159,18 +162,18 @@ export const useService = (callback) => {
 
     return new Promise((resolve, reject) => {
       callback(...args)
-          .then(res => {
-            setResponse(res?.data);
-            return resolve(res);
-          })
-          .catch(err => {
-            data.hasError = true;
-            setError(err);
-            return reject(err);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
+        .then(res => {
+          setResponse(res?.data);
+          return resolve(res);
+        })
+        .catch(err => {
+          data.hasError = true;
+          setError(err);
+          return reject(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     });
   };
 

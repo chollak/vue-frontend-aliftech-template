@@ -4,12 +4,12 @@
 </template>
 
 <script>
-import { apiClient } from "~/services/apiClient";
-export default {
-  setup() {
-    apiClient.get(`/app`);
-  },
-};
+  import { apiClient } from '~/services/apiClient';
+  export default {
+    setup() {
+      apiClient.get(`/app`);
+    },
+  };
 </script>
 
 <style></style>

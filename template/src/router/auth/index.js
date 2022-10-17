@@ -1,15 +1,14 @@
-const AuthPage = () =>
-  import(/* webpackChunkName: "auth" */ "~/views/Auth.vue");
+const AuthPage = () => import(/* webpackChunkName: "auth" */ '~/views/Auth.vue');
 
 export default [
   {
-    path: "/auth",
-    component: () => import("~/layouts/AuthLayout.vue"),
+    path: '/auth',
+    component: () => import('~/layouts/AuthLayout.vue'),
     meta: { public: true },
     children: [
       {
-        path: "",
-        name: "Auth",
+        path: '',
+        name: 'Auth',
         component: AuthPage,
       },
     ],

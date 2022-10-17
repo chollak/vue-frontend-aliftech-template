@@ -1,17 +1,10 @@
 <template>
   <div class="min-h-screen bg-white">
-    <AtNavbar
-      :navLinks="navLinks"
-      :user="$_at_user"
-      in-container
-      @logout="logout"
-    />
+    <AtNavbar :navLinks="navLinks" :user="$_at_user" in-container @logout="logout" />
     <div class="py-10">
       <header>
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 class="text-3xl font-bold leading-tight text-gray-900">
-            {{ $route.name }}
-          </h1>
+          <h1 class="text-3xl font-bold leading-tight text-gray-900"></h1>
         </div>
       </header>
       <main>
@@ -27,27 +20,27 @@
   </div>
 </template>
 <script>
-import { ref } from "vue";
-import AtNavbar from "~/plugins/aliftech-ui/components/AtNavbar/AtNavbar";
-import { logout as serviceLogout } from "~/services/auth.api";
+  import { ref } from 'vue';
+  import AtNavbar from '~/plugins/aliftech-ui/components/AtNavbar/AtNavbar';
+  import { logout as serviceLogout } from '~/services/auth.api';
 
-export default {
-  components: {
-    AtNavbar,
-  },
-  setup() {
-    const navLinks = ref([
-      { title: "Home", to: { name: "Home" } },
-      { title: "About", to: { name: "About" } },
-      { title: "Auth", to: { name: "Auth" } },
-      { title: "Credits", to: { name: "Credits" } },
-    ]);
+  export default {
+    components: {
+      AtNavbar,
+    },
+    setup() {
+      const navLinks = ref([
+        { title: 'Home', to: { name: 'Home' } },
+        { title: 'About', to: { name: 'About' } },
+        { title: 'Auth', to: { name: 'Auth' } },
+        { title: 'Credits', to: { name: 'Credits' } },
+      ]);
 
-    const logout = () => {
-      serviceLogout();
-    };
+      const logout = () => {
+        serviceLogout();
+      };
 
-    return { navLinks, logout };
-  },
-};
+      return { navLinks, logout };
+    },
+  };
 </script>
