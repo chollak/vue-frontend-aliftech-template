@@ -1,38 +1,13 @@
 import { h } from 'vue';
-import { uiConfig } from '../../';
 import AtStatsTitle from '../AtStatsTitle/AtStatsTitle';
 import AtStatsValue from '../AtStatsValue/AtStatsValue';
 import { getIconComponent } from '../../utils';
 
 const AtStats = (props, context) => {
-  let inner = [];
-  if ('default' in context.slots) {
-    const elements = [];
-    const slot = context.slots.default();
-    for (const node of slot) {
-      let tag = undefined;
-      if (Object.prototype.toString.call(node) === '[object Object]' && 'tag' in node) {
-        tag = node.tag;
-      }
-      if (tag === 'a' || tag === 'router-link') {
-        node.data = Object.assign({}, node.data, {
-          class: [
-            'font-medium',
-            'text-' + uiConfig.primaryTextColor + '-600',
-            'hover:text-' + uiConfig.primaryTextColor + '-500',
-          ].concat('class' in node.data ? node.data.class : ''),
-        });
-        elements.push(node);
-      }
-    }
-    if (elements.length) {
-      inner = h('div', { class: 'w-full bg-gray-50 px-4 py-4 sm:px-5' }, elements);
-    }
-  }
   return h(
     'div',
     Object.assign({}, context.attrs, {
-      class: ['flex flex-wrap items-center bg-white overflow-hidden shadow rounded-lg w-full'].concat(
+      class: ['flex flex-wrap items-center bg-white overflow-hidden shadow rounded-lg w-full dark:bg-gray-800'].concat(
         'class' in context.attrs ? context.attrs.class : '',
         'staticClass' in context.attrs ? context.attrs.staticClass : ''
       ),
@@ -44,7 +19,7 @@ const AtStats = (props, context) => {
             ? h(
                 'div',
                 {
-                  class: 'flex-shrink-0 text-white bg-' + uiConfig.primaryBackgroundColor + '-600 rounded-md',
+                  class: 'flex-shrink-0 text-white rounded-md bg-primary-600 dark:bg-primary-500',
                 },
                 [h(getIconComponent(props.icon).Icon, { class: 'w-8 m-2' })]
               )
@@ -70,7 +45,13 @@ const AtStats = (props, context) => {
           ]),
         ]),
       ]),
-      inner,
+      'default' in context.slots
+        ? h(
+            'div',
+            { class: 'w-full bg-white px-4 py-4 sm:px-5 font-medium dark:bg-gray-800 dark:text-white' },
+            context.slots.default()
+          )
+        : null,
     ]
   );
 };

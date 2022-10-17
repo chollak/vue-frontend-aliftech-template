@@ -63,9 +63,9 @@ export default defineComponent({
         result = capitalize(fullMonths[new Date(newValue).getMonth()]);
       } else if (props.type === 'year') {
         result = new Date(newValue).getFullYear().toString();
-      } else if (props.type === 'quarter' && !props.range) {
+      } else if (props.type === 'quarter') {
         result = `${fullQuarters[getQuarterByDate(new Date(newValue))]} - ${new Date(newValue).getFullYear()}`;
-      } else if (props.type === 'half-year' && !props.range) {
+      } else if (props.type === 'half-year') {
         result = `${halfYears[getHalfYearByDate(new Date(newValue))]} - ${new Date(newValue).getFullYear()}`;
       } else {
         for (let token of tokens) {
@@ -124,11 +124,12 @@ export default defineComponent({
             id: this.id,
             modelValue: this.value,
             label: this.label,
+            disabled: this.disabled,
             helpText: this.helpText,
             hint: this.hint,
             iconAfter: { name: 'calendar', type: 'outline' },
             placeholder: 'Выберите дату',
-            'onUpdate:onFocus': () => (this.showCalendar = true),
+            onFocus: () => (this.showCalendar = true),
             error: this.error,
             success: this.success,
           }),
@@ -137,7 +138,7 @@ export default defineComponent({
                 'div',
                 {
                   class: [
-                    'absolute origin-top bg-white p-3 mt-2 w-80 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50',
+                    'absolute origin-top bg-white dark:bg-gray-700 p-3 mt-2 w-80 rounded-md shadow-lg ring-1 ring-black dark:ring-gray-700 ring-opacity-5 focus:outline-none z-50',
                     this.position === 'left' ? 'left-0' : 'right-0',
                   ],
                 },
@@ -147,7 +148,12 @@ export default defineComponent({
                     range: this.range,
                     disabledDates: this.disabledDates,
                     allowedDates: this.allowedDates,
+                    startYear: this.startYear,
+                    endYear: this.endYear,
                     modelValue: this.modelValue,
+                    highlights: this.highlights,
+                    locales: this.locales,
+                    locale: this.locale,
                     'onUpdate:modelValue': value => {
                       this.updateModelValue(value);
                     },

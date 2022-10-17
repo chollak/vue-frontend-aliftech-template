@@ -48,7 +48,7 @@ function maskit(value, mask, masked = true, tokens) {
 
 function dynamicMask(maskit, masks, tokens) {
   masks = masks.sort((a, b) => a.length - b.length);
-  return function(value, mask, masked = true) {
+  return function (value, mask, masked = true) {
     let i = 0;
     while (i < masks.length) {
       const currentMask = masks[i];
@@ -100,7 +100,7 @@ const directive = {
           el = els[0];
         }
       }
-      el.oninput = function(evt) {
+      el.oninput = function (evt) {
         const event = generateEvent('input');
         if (event !== undefined) {
           if (!evt.isTrusted) return;
@@ -112,7 +112,7 @@ const directive = {
           }
           if (el === document.activeElement) {
             el.setSelectionRange(position, position);
-            setTimeout(function() {
+            setTimeout(function () {
               el.setSelectionRange(position, position);
             }, 0);
           }

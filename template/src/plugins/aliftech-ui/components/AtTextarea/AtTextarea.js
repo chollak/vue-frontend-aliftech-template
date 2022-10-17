@@ -10,18 +10,28 @@ import AtInputHelp from '../AtInputHelp/AtInputHelp';
 import './AtTextarea.scss';
 
 const AtTextarea = (props, { emit }) => {
+  const isDisabled = transformToBool(props.disabled);
   return h('div', [
     props.label
-      ? h('label', { for: props.id, class: 'block text-sm font-medium text-gray-700 mb-1' }, props.label)
+      ? h(
+          'label',
+          { for: props.id, class: 'block text-sm font-medium text-gray-700 mb-1 dark:text-white' },
+          props.label
+        )
       : null,
     h('textarea', {
       id: props.id,
       value: props.modelValue,
       rows: props.rows,
-      disabled: props.disabled,
+      disabled: isDisabled,
       class: [
-        'shadow-sm block w-full sm:text-sm border border-gray-300 rounded-md transition duration-200',
+        'shadow-sm block w-full sm:text-sm border border-gray-300 rounded-md transition duration-200 placeholder-opacity-100 placeholder-gray-600',
+        'dark:border-gray-600 dark:placeholder-gray-400',
         setInputBorderClass(transformToBool(props.error), transformToBool(props.success)),
+        {
+          'dark:bg-gray-700': !isDisabled,
+          'bg-gray-50 dark:bg-gray-600 cursor-not-allowed': isDisabled,
+        },
       ],
       onInput: event => emit('update:modelValue', event.target.value),
       placeholder: props.placeholder,

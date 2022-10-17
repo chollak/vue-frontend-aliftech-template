@@ -1,10 +1,13 @@
 import { h, ref, defineComponent } from 'vue';
 
-import { generatorId } from '../../utils';
+import { generatorId, transformToBool } from '../../utils';
 import InputElements from '../../mixins/props/InputElements';
 
 import AtInput from '../AtInput/AtInput';
 import AtInputAddOnSelect from '../AtInputAddOnSelect/AtInputAddOnSelect';
+
+import tj from '../../assets/flags/tj.svg';
+import uz from '../../assets/flags/uz.svg';
 
 export default defineComponent({
   name: 'AtPhoneSelect',
@@ -24,11 +27,18 @@ export default defineComponent({
       country.value = props.modelValue.slice(0, 3);
     }
     const prefix = [
-      { value: '998', title: '🇺🇿 (+998)' },
-      { value: '992', title: '🇹🇯 (+992)' },
+      { value: '998', title: '(+998)', flag: 'uz' },
+      { value: '992', title: '(+992)', flag: 'tj' },
     ];
 
     return { country, phone, prefix };
+  },
+  watch: {
+    modelValue() {
+      if (this.modelValue.length === 0) {
+        this.phone = '';
+      }
+    },
   },
   render() {
     return h(
@@ -42,7 +52,7 @@ export default defineComponent({
         label: this.label,
         error: this.error,
         success: this.success,
-        disabled: this.disabled,
+        disabled: transformToBool(this.disabled),
         'onUpdate:modelValue': value => {
           this.phone = value;
           this.$emit('update:modelValue', this.country + value);
@@ -51,15 +61,37 @@ export default defineComponent({
       },
       {
         addOnBefore: () =>
-          h(AtInputAddOnSelect, {
-            items: this.prefix,
-            modelValue: this.country,
-            beforeInput: true,
-            'onUpdate:modelValue': value => {
-              this.$emit('update:modelValue', value + this.phone);
-              this.country = value;
+          h(
+            AtInputAddOnSelect,
+            {
+              items: this.prefix,
+              modelValue: this.country,
+              beforeInput: true,
+              disabled: transformToBool(this.disabled),
+              'onUpdate:modelValue': value => {
+                this.$emit('update:modelValue', value + this.phone);
+                this.country = value;
+              },
             },
-          }),
+            {
+              title: () => {
+                return h('div', { class: 'flex items-center' }, [
+                  h('img', {
+                    src: this.country === '998' ? uz : tj,
+                    alt: this.country === '998' ? uz : tj,
+                    class: 'w-3 h-3 mr-2',
+                  }),
+                  this.country,
+                ]);
+              },
+              optionTitle: ({ item }) => {
+                return h('div', { class: 'flex items-center' }, [
+                  h('img', { src: item.flag === 'uz' ? uz : tj, alt: item.flag, class: 'w-3 h-3 mr-2' }),
+                  item.title,
+                ]);
+              },
+            }
+          ),
       }
     );
   },

@@ -1,5 +1,5 @@
-import { validateDropdownItem, validateItem } from './validations';
-import { checkType, hasOwnProperty } from '../../utils';
+import { validateDropdownItems, validateItem, validateModules } from '../validations';
+import { hasOwnProperty } from '../../../utils';
 
 export const methods = {
   methods: {
@@ -26,8 +26,8 @@ export const props = {
     logo: {
       type: Object,
       default: () => {},
-      validator: function(obj) {
-        return hasOwnProperty(obj, 'name') && hasOwnProperty(obj, 'path');
+      validator: function (obj) {
+        return hasOwnProperty(obj, 'name') && (hasOwnProperty(obj, 'path') || hasOwnProperty(obj, 'darkPath'));
       },
     },
     user: {
@@ -40,12 +40,20 @@ export const props = {
     userDropdownItems: {
       type: Array,
       default: () => [],
-      validator: arr => {
-        if (!checkType(arr, 'array')) {
-          return false;
-        }
-        return arr.every(item => validateDropdownItem(item));
+      validator: items => {
+        return validateDropdownItems(items);
       },
+    },
+    modules: {
+      type: Array,
+      default: () => [],
+      validator: modules => {
+        return validateModules(modules);
+      },
+    },
+    module: {
+      type: [Object, String, Number],
+      default: () => '',
     },
     noUserSection: { type: Boolean, default: false },
   },
@@ -56,7 +64,7 @@ export const sidebarItemProps = {
     item: {
       type: Object,
       default: () => {},
-      validator: function(obj) {
+      validator: function (obj) {
         return validateItem(obj);
       },
     },

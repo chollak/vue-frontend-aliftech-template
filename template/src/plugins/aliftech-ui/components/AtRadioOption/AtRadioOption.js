@@ -1,33 +1,45 @@
 import { h } from 'vue';
-import { generatorId } from '~/plugins/aliftech-ui/utils';
-import { uiConfig } from '~/plugins/aliftech-ui';
+import { generatorId, transformToBool } from '~/plugins/aliftech-ui/utils';
 import AtInputHelp from '~/plugins/aliftech-ui/components/AtInputHelp/AtInputHelp';
 import { getInputHelpType } from '~/plugins/aliftech-ui/utils/componentsSameFunctions/forms';
 
 const AtRadioOption = (props, { emit }) => {
+  const isDisabled = transformToBool(props.disabled);
+
   return h('div', [
     h(
       'label',
       {
-        class: 'rounded-tl-md rounded-tr-md relative flex cursor-pointer focus:outline-non',
+        class: [
+          'rounded-tl-md rounded-tr-md relative flex cursor-pointer focus:outline-non',
+          { 'cursor-not-allowed': isDisabled },
+        ],
       },
       [
         h('input', {
           value: props.value,
           checked: props.value === props.modelValue,
+          disabled: isDisabled,
           type: 'radio',
           class: [
-            'h-4 w-4 mt-0.5 cursor-pointer',
+            'h-4 w-4 mt-0.5',
             !props.error && !props.success
-              ? 'text-' +
-                uiConfig.primaryTextColor +
-                '-600 border-gray-300 focus:ring-' +
-                uiConfig.primaryBorderColor +
-                '-500'
+              ? [
+                  'border-gray-300',
+                  'text-primary-600',
+                  'focus:ring-primary-500',
+                  'dark:text-primary-500',
+                  'dark:focus:ring-offset-gray-900',
+                  'dark:focus:ring-primary-400',
+                ]
               : '',
             {
-              'border-red-300 text-red-500 focus:ring-red-500': props.error,
-              'border-green-500 text-green-500 focus:ring-green-500': props.success,
+              'cursor-pointer': !isDisabled,
+              'cursor-not-allowed': isDisabled,
+              'border-red-300 text-red-500 focus:ring-red-500 dark:border-red-500 dark:text-red-500 dark:focus:ring-red-400 dark:focus:ring-offset-gray-900':
+                props.error,
+              'border-green-500 text-green-500 focus:ring-green-500 dark:border-green-500 dark:text-green-500 dark:focus:ring-green-400 dark:focus:ring-offset-gray-900':
+                props.success,
             },
           ],
           name: props.name,
@@ -39,34 +51,40 @@ const AtRadioOption = (props, { emit }) => {
             emit('update:modelValue', e.target.value);
           },
         }),
-        h('div', { class: 'ml-3 flex flex-col' }, [
-          props.label
-            ? h(
-                'span',
-                {
-                  class: [
-                    'block text-sm font-medium',
-                    props.modelValue === props.value ? 'text-' + uiConfig.primaryTextColor + '-900' : 'text-gray-900',
-                  ],
-                  id: props.id + 'label',
-                },
-                props.label
-              )
-            : null,
-          props.description
-            ? h(
-                'span',
-                {
-                  class: [
-                    'block text-sm',
-                    props.modelValue === props.value ? 'text-' + uiConfig.primaryTextColor + '-700' : 'text-gray-500',
-                  ],
-                  id: props.id + 'description',
-                },
-                props.description
-              )
-            : null,
-        ]),
+        props.label || props.description
+          ? h('div', { class: 'ml-3 flex flex-col' }, [
+              props.label
+                ? h(
+                    'span',
+                    {
+                      class: [
+                        'block text-sm font-medium',
+                        props.modelValue === props.value
+                          ? ['text-primary-900', 'dark:text-primary-500']
+                          : 'text-gray-900 dark:text-white',
+                      ],
+                      id: props.id + 'label',
+                    },
+                    props.label
+                  )
+                : null,
+              props.description
+                ? h(
+                    'span',
+                    {
+                      class: [
+                        'block text-sm',
+                        props.modelValue === props.value
+                          ? ['text-primary-700', 'dark:text-primary-300']
+                          : 'text-gray-500 dark:text-white',
+                      ],
+                      id: props.id + 'description',
+                    },
+                    props.description
+                  )
+                : null,
+            ])
+          : null,
       ]
     ),
     props.error

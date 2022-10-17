@@ -5,7 +5,9 @@ const AtPanelTitle = (props, ctx) => {
     ? h(
         props.tag,
         Object.assign({}, ctx.attrs, {
-          class: ['text-lg leading-6 font-medium text-gray-900'].concat('class' in ctx.attrs ? ctx.attrs.class : ''),
+          class: ['text-lg leading-6 font-medium text-gray-900 dark:text-white'].concat(
+            'class' in ctx.attrs ? ctx.attrs.class : ''
+          ),
         }),
         [ctx.slots.default()]
       )

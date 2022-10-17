@@ -13,8 +13,8 @@
   }
   &::-webkit-scrollbar {
     border-radius: 999px;
-    width: 4px / 16px * 1rem;
-    height: 4px / 16px * 1rem;
+    width: 4px;
+    height: 4px;
   }
   &::-webkit-scrollbar-thumb {
     border-radius: 999px;
@@ -23,5 +23,9 @@
       background-color: rgba(49, 130, 206, 1);
     }
   }
+}
+
+.dark *::-webkit-search-cancel-button{
+  filter: invert(1);
 }
 //@include generateColor(#2F80ED, 'online');

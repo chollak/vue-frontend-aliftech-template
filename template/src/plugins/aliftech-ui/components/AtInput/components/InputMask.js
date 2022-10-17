@@ -10,7 +10,7 @@ export default {
   emits: ['update:modelValue', 'change'].concat(InputEventsTypes),
   props: {
     type: { type: String, default: 'text' },
-    modelValue: { type: [String, Number], required: true },
+    modelValue: { type: [String, Number], default: '' },
     mask: { type: [String, Array], required: true },
     masked: { type: Boolean, default: false },
     tokens: { type: Object, default: () => tokens },

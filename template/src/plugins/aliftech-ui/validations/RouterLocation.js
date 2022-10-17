@@ -1,4 +1,4 @@
-module.exports = function(prop) {
+module.exports = function (prop) {
   const toString = Object.prototype.toString;
   if (toString.call(prop) !== '[object String]' && toString.call(prop) !== '[object Object]') return false;
   if (toString.call(prop) === '[object Object]') {

@@ -1,5 +1,4 @@
 import { h } from 'vue';
-import './AtDescriptionGroup.scss';
 
 const AtDescriptionGroup = (props, context) => {
   return 'default' in context.slots

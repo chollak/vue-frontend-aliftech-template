@@ -1,4 +1,4 @@
-import { h, ref, computed, Teleport } from 'vue';
+import { h, computed, Teleport } from 'vue';
 import { XIcon } from '@heroicons/vue/solid/esm';
 
 import AtModalTitle from '~/plugins/aliftech-ui/components/AtModalTitle/AtModalTitle';
@@ -9,33 +9,29 @@ import { generatorId } from '../../utils/generatorId';
 import './AtModal.scss';
 
 import { modalDialogSizes } from '../../constants/modalDialogSizes';
+import { checkType } from '~/plugins/aliftech-ui/utils';
 
-let display = ref(false);
-let animated = ref(false);
-let selectedModal = ref(null);
+let selectedModal = null;
+
+const setOverflow = value => {
+  const body = document.querySelector('body');
+  const atSidebar = document.querySelector('.at-sidebar');
+
+  if (checkType(body, 'HTMLBodyElement') && 'style' in body) {
+    body.style.overflow = value;
+  }
+
+  if (checkType(atSidebar, 'HTMLDivElement') && 'style' in atSidebar) {
+    atSidebar.style.overflow = value;
+  }
+};
 
 const AtModal = (props, ctx) => {
-  let timeoutAnimation = undefined;
+  selectedModal = props.id;
 
   const toggleVisible = visible => {
-    if (props.id === selectedModal.value || visible === true) {
-      if (visible) {
-        display.value = true;
-        selectedModal.value = props.id;
-      } else {
-        animated.value = false;
-      }
-      if (timeoutAnimation) {
-        clearTimeout(timeoutAnimation);
-      } else {
-        timeoutAnimation = setTimeout(
-          () => {
-            if (!visible) display.value = false;
-            else animated.value = true;
-          },
-          visible ? 50 : 200
-        );
-      }
+    if (props.id === selectedModal) {
+      setOverflow(visible ? 'hidden' : 'auto');
     }
   };
 
@@ -51,8 +47,6 @@ const AtModal = (props, ctx) => {
     };
   });
 
-  toggleVisible(transformToBool(props.modelValue));
-
   return h(
     Teleport,
     { to: 'body' },
@@ -60,10 +54,9 @@ const AtModal = (props, ctx) => {
       'div',
       {
         class: [
-          'fixed inset-0 overflow-y-auto items-center justify-center min-h-screen pt-4 px-4 pb-20 sm:p-0 at-modal z-10',
+          'fixed inset-0 overflow-y-auto p-4 md:py-7 at-modal z-10',
           {
-            'at-modal-display': selectedModal.value === props.id ? display.value : false,
-            'at-modal-animated': selectedModal.value === props.id ? animated.value : false,
+            'display': props.modelValue,
           },
         ],
         'at-modal': props.id,
@@ -77,18 +70,24 @@ const AtModal = (props, ctx) => {
             ctx.emit('update:modelValue', false);
           },
         }),
-        h('div', { class: 'at-modal-wrapper' }, [
+        h('div', { class: 'at-modal-wrapper m-auto max-h-full flex' }, [
           h(
             'div',
             {
-              class: ['rounded-lg text-left shadow-xl relative', modalDialogSizes[props.size], 'sm:w-full bg-white'],
+              class: [
+                'rounded-lg text-left shadow-xl relative flex flex-col overflow-hidden',
+                modalDialogSizes[props.size],
+                'sm:w-full bg-white dark:bg-gray-800',
+                'footer' in ctx.slots ? 'pt-5 sm:pt-6' : 'pt-5 sm:pt-6',
+              ],
             },
             [
-              h('div', { class: 'hidden sm:block absolute top-0 right-0 pt-4 pr-4' }, [
+              h('div', { class: 'sm:block absolute top-0 right-0 pt-4 pr-4' }, [
                 h(
                   'button',
                   {
-                    class: 'outline-none text-gray-400 hover:text-gray-500 focus:outline-none',
+                    class:
+                      'outline-none text-gray-400 dark:text-white hover:text-gray-500 dark:hover:text-gray-200 focus:outline-none',
                     onClick: () => {
                       toggleVisible(false);
                       ctx.emit('update:modelValue', false);
@@ -97,32 +96,34 @@ const AtModal = (props, ctx) => {
                   [h(XIcon, { style: [{ width: '24px', height: '24px' }] })]
                 ),
               ]),
-              h('div', [
-                h(
-                  'div',
-                  {
-                    class: [
-                      'text-sm text-gray-500',
-                      'footer' in ctx.slots ? 'px-4 pt-5 pb-4 sm:p-6 sm:pb-4' : 'px-4 pt-5 pb-4 sm:p-6',
-                    ],
-                  },
-                  [
-                    'title' in ctx.slots
-                      ? ctx.$slots.title(slotProps)
-                      : props.title
-                      ? h(AtModalTitle, {}, { default: () => props.title })
-                      : null,
-                    'default' in ctx.slots
-                      ? h('div', { class: 'w-screen max-w-full' }, [ctx.slots?.default(slotProps)])
-                      : props.description
-                      ? h('div', { class: 'w-screen max-w-full' }, [h('p', props.description)])
-                      : null,
-                  ]
-                ),
-                'footer' in ctx.slots
-                  ? h('div', { class: 'bg-gray-50 px-4 py-3 sm:px-6 block' }, ctx.slots.footer(slotProps))
+              h('div', { class: 'mb-2 px-4 sm:px-6' }, [
+                'title' in ctx.slots
+                  ? ctx.slots.title(slotProps.value)
+                  : props.title
+                  ? h(AtModalTitle, {}, { default: () => props.title })
                   : null,
               ]),
+              h(
+                'div',
+                {
+                  class:
+                    'h-full text-sm text-gray-500 dark:text-gray-300 flex flex-col pb-4 sm:pb-6 w-screen max-w-full overflow-auto px-4 sm:px-6',
+                },
+                [
+                  'default' in ctx.slots
+                    ? ctx.slots?.default(slotProps.value)
+                    : props.description
+                    ? h('p', props.description)
+                    : null,
+                ]
+              ),
+              'footer' in ctx.slots
+                ? h(
+                    'div',
+                    { class: 'bg-gray-50 dark:bg-gray-900 dark:text-white px-4 py-3 sm:px-6 block' },
+                    ctx.slots.footer(slotProps.value)
+                  )
+                : null,
             ]
           ),
         ]),

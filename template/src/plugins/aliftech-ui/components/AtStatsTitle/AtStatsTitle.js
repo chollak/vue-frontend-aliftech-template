@@ -5,7 +5,7 @@ const AtStatsTitle = (props, context) => {
     ? h(
         'dt',
         Object.assign({}, context.attrs, {
-          class: ['text-sm font-medium text-gray-500 truncate'].concat(
+          class: ['text-sm font-medium text-gray-500 truncate dark:text-gray-300'].concat(
             'class' in context.attrs ? context.attrs.class : ''
           ),
         }),

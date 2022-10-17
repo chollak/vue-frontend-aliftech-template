@@ -10,6 +10,7 @@ export default {
     container.mount(div);
   },
   show: options => methods.show(options),
+  remove: id => methods.remove(id),
   success: options => methods.show({ ...options, type: 'success' }),
   error: options => methods.show({ ...options, type: 'error' }),
   warning: options => methods.show({ ...options, type: 'warning' }),

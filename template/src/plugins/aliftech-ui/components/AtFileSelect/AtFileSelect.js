@@ -1,15 +1,16 @@
 import { h, ref, defineComponent, computed } from 'vue';
-import { generatorId, getFileTypes, convertBytes } from '../../utils';
-import { uiConfig } from '../../index';
+import { generatorId, getFileTypes, convertBytes, transformToBool } from '../../utils';
 
 import { PaperClipIcon } from '@heroicons/vue/outline/esm';
 import { MinusCircleIcon } from '@heroicons/vue/solid/esm';
 import { getInputHelpType, setInputBorderClass } from '~/plugins/aliftech-ui/utils/componentsSameFunctions/forms';
 import AtInputHelp from '~/plugins/aliftech-ui/components/AtInputHelp/AtInputHelp';
+import InputElements from '~/plugins/aliftech-ui/mixins/props/InputElements';
 
 export default defineComponent({
   name: 'AtFileSelect',
   props: {
+    ...InputElements.props,
     id: { type: String, default: () => generatorId('at-file-select-') },
     multiple: { type: Boolean, default: false },
     title: { type: String, default: '' },
@@ -18,9 +19,6 @@ export default defineComponent({
     formKey: { type: String, default: 'files' },
     accept: { type: [String, Object, Array], default: '.*' },
     size: { type: [Number, String, Infinity], default: Infinity },
-    label: { type: String, default: '' },
-    error: { type: [String, Number], default: '' },
-    success: { default: false },
   },
   setup(props, { emit }) {
     let filesFormData = ref(new FormData());
@@ -96,9 +94,16 @@ export default defineComponent({
       event.stopPropagation();
       filesToPreview.value = filesToPreview.value.filter((_, fileIndex) => fileIndex !== index);
       files.value = files.value.filter((_, fileIndex) => fileIndex !== index);
-      filesFormData.value.delete(props.formKey + '[]');
-      for (let file of files.value) {
-        filesFormData.value.append(props.formKey + '[]', file);
+      if (props.multiple) {
+        filesFormData.value.delete(props.formKey + '[]');
+        for (let file of files.value) {
+          filesFormData.value.append(props.formKey + '[]', file);
+        }
+      } else {
+        filesFormData.value.delete(props.formKey);
+        for (let file of files.value) {
+          filesFormData.value.append(props.formKey, file);
+        }
       }
       emit('onSelect', filesFormData.value);
     }
@@ -113,6 +118,7 @@ export default defineComponent({
     };
   },
   render() {
+    const isDisabled = transformToBool(this.disabled);
     const inputRef = ref(generatorId('inputRef'));
 
     const renderCell = (file, index) => {
@@ -127,11 +133,13 @@ export default defineComponent({
           'div',
           {
             class: 'text-left w-4/6 flex-1 px-3',
-            style: `max-width: ${this.$refs.mainBlockRef?.clientWidth -
-              (this.$refs.leftColRef?.clientWidth + this.$refs.rightColRef?.clientWidth)}px`,
+            style: `max-width: ${
+              this.$refs.mainBlockRef?.clientWidth -
+              (this.$refs.leftColRef?.clientWidth + this.$refs.rightColRef?.clientWidth)
+            }px`,
           },
           [
-            h('p', { class: 'p-0 mb-1 text-gray-800 break-all truncate text-sm' }, file.name),
+            h('p', { class: 'p-0 mb-1 text-gray-800 break-all truncate text-sm dark:text-white' }, file.name),
             h('p', { class: 'p-0 m-0 text-gray-400 text-xs' }, `(${convertBytes(file.size).megabyte.toFixed(2)} мб.)`),
           ]
         ),
@@ -156,7 +164,7 @@ export default defineComponent({
               'label',
               {
                 for: this.id,
-                class: 'block text-sm font-medium text-gray-700 mb-1',
+                class: 'block text-sm font-medium text-gray-700 mb-1 dark:text-white',
               },
               this.label
             )
@@ -170,11 +178,14 @@ export default defineComponent({
               inputRef.value?.click();
             },
             class: [
-              'px-6 pt-5 pb-6 border-2 w-full border-gray-300 border-dashed rounded-md bg-white rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2',
-              'text-' + uiConfig.primaryTextColor + '-600',
-              'hover:text-' + uiConfig.primaryTextColor + '-500',
-              'focus:ring-' + uiConfig.primaryBoxShadowColor + '-500',
+              'px-6 pt-5 pb-6 border-2 w-full border-gray-300 border-dashed rounded-md rounded-md font-medium focus:outline-none text-primary-600',
+              'dark:border-gray-600 dark:text-white',
               setInputBorderClass(this.error, this.success),
+              {
+                'bg-white hover:text-primary-500 focus:ring-primary-500 focus:ring-2 focus:ring-offset-2 dark:bg-gray-700 dark:hover:text-gray-200 dark:focus:ring-offset-gray-900 dark:focus:ring-primary-600':
+                  !isDisabled,
+              },
+              { 'bg-gray-50 dark:bg-gray-600 cursor-not-allowed': isDisabled },
             ],
           },
           [
@@ -196,7 +207,7 @@ export default defineComponent({
                 ])
               : h('div', { class: 'block w-full' }, [
                   h('div', { class: 'flex items-center w-full justify-center' }, [
-                    h(PaperClipIcon, { class: 'mr-2 h-5 w-5 block text-gray-400' }),
+                    h(PaperClipIcon, { class: 'mr-2 h-5 w-5 block text-gray-400 dark:text-gray-300' }),
                     this.filesToPreview.length
                       ? this.titleMore || 'Загрузить другой файл'
                       : this.title || 'Выберите файл',
@@ -212,6 +223,7 @@ export default defineComponent({
         h('input', {
           id: this.id,
           type: 'file',
+          disabled: isDisabled,
           ref: inputRef,
           multiple: this.multiple,
           accept: getFileTypes(this.accept).mime,

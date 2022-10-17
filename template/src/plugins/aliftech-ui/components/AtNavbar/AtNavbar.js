@@ -4,7 +4,6 @@ import { hasOwnProperty } from '../../utils';
 import { Disclosure, DisclosureButton, Menu, MenuItems, MenuButton, DisclosurePanel } from '@headlessui/vue';
 import AtDropdownItem from '../AtDropdownItem/AtDropdownItem';
 import { MenuIcon, XIcon } from '@heroicons/vue/outline/index';
-import { uiConfig } from '../../index';
 
 export default defineComponent({
   props: {
@@ -16,7 +15,7 @@ export default defineComponent({
     logo: {
       type: Object,
       default: () => {},
-      validator: function(obj) {
+      validator: function (obj) {
         return hasOwnProperty(obj, 'name') && hasOwnProperty(obj, 'path');
       },
     },
@@ -28,20 +27,11 @@ export default defineComponent({
       },
     },
     inContainer: { type: Boolean, default: false },
-    dark: { type: Boolean, default: false },
   },
   render() {
     const mobileLinkClass = condition => [
       condition
-        ? this.dark
-          ? 'bg-gray-700 text-white border-' + uiConfig.primaryBorderColor + '-500 '
-          : 'bg-' +
-            uiConfig.primaryBackgroundColor +
-            '-50 text-' +
-            uiConfig.primaryTextColor +
-            '-700 border-' +
-            uiConfig.primaryBorderColor +
-            '-500 '
+        ? 'bg-primary-50 text-primary-700 border-primary-500 dark:bg-gray-700 dark:text-white dark:border-primary-500'
         : 'border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800',
       'block pl-3 pr-4 py-2 border-l-4 text-base font-medium',
     ];
@@ -54,7 +44,7 @@ export default defineComponent({
               title: userLink.title,
               icon: userLink.icon || '',
               active: userLink.route.name === this.$route.name,
-              'onUpdate:onClick': () => {
+              'onClick': () => {
                 this.$router.push(userLink.route);
               },
             })
@@ -94,7 +84,7 @@ export default defineComponent({
 
     return h(
       Disclosure,
-      { as: 'nav', class: ['border-b', this.dark ? 'bg-gray-800 border-gray-900' : 'bg-white border-gray-200'] },
+      { as: 'nav', class: ['border-b', 'bg-white border-gray-200', 'dark:bg-gray-800 dark:border-gray-800'] },
       {
         default: ({ open }) => [
           h('div', { class: ['mx-auto px-4', this.inContainer ? 'container' : 'sm:px-6 lg:px-8'] }, [
@@ -105,14 +95,22 @@ export default defineComponent({
                     RouterLink,
                     { to: '/', exact: true },
                     {
-                      default: () =>
+                      default: () => [
                         h('img', {
-                          class: 'block h-8 w-auto',
+                          class: 'h-8 w-auto hidden dark:block',
+                          src:
+                            this.logo?.path ??
+                            'https://tailwindui.com/img/logos/workflow-logo-indigo-500-mark-white-text.svg',
+                          alt: this.logo?.name ?? 'Nav logo',
+                        }),
+                        h('img', {
+                          class: 'h-8 w-auto block dark:hidden',
                           src:
                             this.logo?.path ??
                             'https://tailwindui.com/img/logos/workflow-logo-indigo-600-mark-gray-800-text.svg',
                           alt: this.logo?.name ?? 'Nav logo',
                         }),
+                      ],
                     }
                   ),
                 ]),
@@ -124,12 +122,8 @@ export default defineComponent({
                         to: link.to,
                         class: [
                           link.to.name === this.$route.name
-                            ? this.dark
-                              ? 'border-' + uiConfig.primaryBorderColor + '-500 text-white'
-                              : 'border-' + uiConfig.primaryBorderColor + '-500 text-gray-900'
-                            : this.dark
-                            ? 'text-gray-400 hover:border-gray-300 hover:text-gray-300 border-transparent'
-                            : 'text-gray-500 hover:border-gray-300 hover:text-gray-700 border-transparent',
+                            ? 'border-primary-500 text-gray-900 dark:border-primary-500 dark:text-white'
+                            : 'text-gray-500 hover:border-gray-300 hover:text-gray-700 border-transparent dark:text-gray-400 dark:hover:border-white dark:hover:text-white dark:border-transparent',
                           'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium',
                         ],
                         'aria-current': link.to.name === this.$route.name ? 'page' : undefined,
@@ -150,9 +144,7 @@ export default defineComponent({
                           MenuButton,
                           {
                             class:
-                              'max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-' +
-                              uiConfig.primaryBorderColor +
-                              '-500',
+                              'max-w-xs bg-white flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
                           },
                           {
                             default: () =>
@@ -181,26 +173,32 @@ export default defineComponent({
                             h(
                               MenuItems,
                               {
-                                class:
+                                class: [
                                   'origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none',
+                                  'dark:bg-gray-700 dark:ring-gray-700',
+                                ],
                               },
                               {
                                 default: () => [
                                   h('div', { class: 'block px-4 py-3' }, [
                                     h(
                                       'div',
-                                      { class: 'text-base font-medium text-gray-800' },
+                                      { class: 'text-base font-medium text-gray-800 dark:text-white' },
                                       this.user?.full_name || `${this.user?.name ?? ''} ${this.user?.surname ?? ''}`
                                     ),
                                     this.user?.phone
-                                      ? h('div', { class: 'text-sm font-medium text-gray-500' }, this.user?.phone)
+                                      ? h(
+                                          'div',
+                                          { class: 'text-sm font-medium text-gray-500 dark:text-gray-300' },
+                                          this.user?.phone
+                                        )
                                       : null,
                                   ]),
                                   renderUserNavLinks(),
                                   h(AtDropdownItem, {
                                     title: 'Выйти',
                                     icon: { name: 'logout', type: 'outline' },
-                                    'onUpdate:onClick': () => this.$emit('logout'),
+                                    onClick: () => this.$emit('logout'),
                                   }),
                                 ],
                               }
@@ -218,11 +216,8 @@ export default defineComponent({
                   {
                     class: [
                       'inline-flex items-center justify-center p-2 rounded-md text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2',
-                      this.dark
-                        ? 'bg-gray-800 hover:text-white hover:bg-gray-700 focus:ring-offset-gray-800'
-                        : 'bg-white hover:text-gray-500 hover:bg-gray-100 focus:ring-' +
-                          uiConfig.primaryBorderColor +
-                          '-500',
+                      'bg-white hover:text-gray-500 hover:bg-gray-100 focus:ring-primary-500',
+                      'dark:text-gray-300 dark:bg-gray-800 dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-offset-gray-800',
                     ],
                   },
                   {

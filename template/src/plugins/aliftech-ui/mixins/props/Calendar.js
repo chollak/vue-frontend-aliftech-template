@@ -1,4 +1,6 @@
 import calendarDates from '../../validations/CalendarDates';
+import { ru, uz } from '~/plugins/aliftech-ui/locale';
+
 export default {
   props: {
     range: { type: Boolean, default: false },
@@ -20,6 +22,26 @@ export default {
           value === 'date' || value === 'month' || value === 'year' || value === 'quarter' || value === 'half-year'
         );
       },
+    },
+    startYear: {
+      type: [Number, String],
+      default: 1900,
+    },
+    endYear: {
+      type: [Number, String],
+      default: 2100,
+    },
+    highlights: {
+      type: Array,
+      default: () => [],
+    },
+    locales: {
+      type: Object,
+      default: () => ({ ru: ru.dates, uz: uz.dates }),
+    },
+    locale: {
+      type: String,
+      default: 'ru',
     },
   },
 };

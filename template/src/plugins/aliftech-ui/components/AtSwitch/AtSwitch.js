@@ -20,7 +20,13 @@ const AtSwitch = (props, context) => {
           h(
             'label',
             {
-              class: 'cursor-pointer font-medium text-gray-700',
+              class: [
+                'font-medium text-gray-700 dark:text-white',
+                {
+                  'cursor-pointer': !props.disabled,
+                  'cursor-not-allowed': props.disabled,
+                },
+              ],
               for: props.id,
             },
             [h(AtInputHelp, { mt: 0 }, { default: () => context.slots.default() })]
@@ -37,6 +43,7 @@ AtSwitch.props = {
     default: 'left',
     validator: position => position === 'left' || position === 'right',
   },
+  disabled: { type: [Boolean, Number, String], default: false },
 };
 
 export default AtSwitch;

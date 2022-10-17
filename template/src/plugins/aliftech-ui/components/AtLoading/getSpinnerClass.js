@@ -9,13 +9,13 @@ export const getSpinnerClass = (color, size) => {
       textColor = 'text-white';
       break;
     case 'secondary':
-      textColor = 'text-indigo-700';
+      textColor = 'text-primary-700';
       break;
     case 'warning':
       textColor = 'text-black';
       break;
     default:
-      textColor = 'text-gray-700';
+      textColor = 'text-gray-700 dark:text-primary-400';
       break;
   }
 

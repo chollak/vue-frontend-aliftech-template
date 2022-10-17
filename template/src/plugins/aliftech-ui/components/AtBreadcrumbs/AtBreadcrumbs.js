@@ -1,6 +1,5 @@
 import { h } from 'vue';
 import RouterLocation from '../../validations/RouterLocation';
-import { uiConfig } from '../../index';
 import { HomeIcon, ChevronRightIcon } from '@heroicons/vue/solid';
 import { RouterLink } from 'vue-router';
 
@@ -19,7 +18,7 @@ const AtBreadcrumbs = props => {
             RouterLink,
             {
               to: '/',
-              class: ['text-gray-400', 'hover:text-' + uiConfig.primaryBackgroundColor + '-600'],
+              class: ['text-gray-400 dark:text-gray-300', 'hover:text-primary-600', 'dark:hover:text-white'],
             },
             {
               default: () =>
@@ -36,14 +35,14 @@ const AtBreadcrumbs = props => {
             return h('li', [
               h('div', { class: 'flex items-center' }, [
                 h(ChevronRightIcon, {
-                  class: 'flex-shrink-0 h-5 w-5 text-gray-400',
+                  class: 'flex-shrink-0 h-5 w-5 text-gray-400 dark:text-gray-300',
                   'aria-hidden': true,
                 }),
                 item.current
                   ? h(
                       'span',
                       {
-                        class: ['ml-4 text-sm font-medium text-gray-800 mt-0.5'],
+                        class: ['ml-4 text-sm font-medium text-gray-800 dark:text-white mt-0.5'],
                         'aria-current': 'page',
                       },
                       item.title
@@ -53,8 +52,9 @@ const AtBreadcrumbs = props => {
                       {
                         to: item.to,
                         class: [
-                          'ml-4 text-sm font-medium text-gray-500 mt-0.5',
-                          'hover:text-' + uiConfig.primaryBackgroundColor + '-700',
+                          'ml-4 text-sm font-medium text-gray-500 dark:text-gray-400 mt-0.5',
+                          'hover:text-primary-700',
+                          'dark:hover:text-white',
                         ],
                         'aria-current': undefined,
                       },

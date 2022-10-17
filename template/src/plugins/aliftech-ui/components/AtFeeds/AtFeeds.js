@@ -10,22 +10,34 @@ const AtFeeds = props => {
         h('img', {
           src: item.image || noPhoto,
           alt: item.title,
-          class: 'h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white object-cover',
+          class: [
+            'h-10 w-10 rounded-full bg-gray-400 flex items-center justify-center ring-8 ring-white object-cover',
+            'dark:bg-gray-100 dark:ring-gray-900',
+          ],
         }),
-        h(
-          'span',
-          {
-            class: 'absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px',
-          },
-          [h(getIconComponent(item.icon).Icon, { class: 'h-5 w-5 text-gray-400', 'aria-hidden': true })]
-        ),
+        item.icon
+          ? h(
+              'span',
+              {
+                class: 'absolute -bottom-0.5 -right-1 bg-white rounded-tl px-0.5 py-px',
+              },
+              [
+                h(getIconComponent(item.icon).Icon, {
+                  class: 'h-5 w-5 text-gray-400 dark:text-gray-900',
+                  'aria-hidden': true,
+                }),
+              ]
+            )
+          : null,
       ]),
       h('div', { class: 'min-w-0 flex-1' }, [
         h('div', [
-          h('div', { class: 'text-sm' }, [h('span', { class: 'font-medium text-gray-900' }, item.title)]),
-          h('p', { class: 'mt-0.5 text-sm text-gray-500' }, dateParser(item.date)),
+          h('div', { class: 'text-sm' }, [
+            h('span', { class: 'font-medium text-gray-900 dark:text-white' }, item.title),
+          ]),
+          h('p', { class: 'mt-0.5 text-sm text-gray-500 dark:text-gray-300' }, dateParser(item.date)),
         ]),
-        h('div', { class: 'mt-2 text-sm text-gray-700' }, [h('p', item.content)]),
+        h('div', { class: 'mt-2 text-sm text-gray-700 dark:text-gray-200' }, [h('p', item.content)]),
       ]),
     ]);
 
@@ -36,23 +48,23 @@ const AtFeeds = props => {
           'span',
           {
             class: [
-              item.iconBgColor ? 'bg-' + item.iconBgColor + '-500' : 'bg-gray-400',
-              'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white',
+              item.iconBgColor ? 'bg-' + item.iconBgColor + '-500' : 'bg-gray-400 dark:bg-gray-100',
+              'h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-900',
               { 'mx-1': props.items.some(item => item.type && item.type === 'comment') },
             ],
           },
-          [h(getIconComponent(item.icon).Icon, { class: 'h-5 w-5 text-white', 'aria-hidden': true })]
+          [h(getIconComponent(item.icon).Icon, { class: 'h-5 w-5 text-white dark:text-gray-900', 'aria-hidden': true })]
         ),
       ]),
       h('div', { class: 'min-w-0 flex-1 pt-1.5 flex justify-between space-x-4' }, [
         h('div', [
-          h('p', { class: 'text-sm text-gray-500' }, [
+          h('p', { class: 'text-sm text-gray-500 dark:text-gray-300' }, [
             item.title,
-            h('span', { class: 'font-medium text-gray-900 ml-1' }, item.content),
+            h('span', { class: 'font-medium text-gray-900 ml-1 dark:text-white' }, item.content),
           ]),
         ]),
         item.date
-          ? h('div', { class: 'text-right text-sm whitespace-nowrap text-gray-500' }, [
+          ? h('div', { class: 'text-right text-sm whitespace-nowrap text-gray-500 dark:text-gray-300' }, [
               h('time', { datetime: item.date }, dateParser(item.date)),
             ])
           : null,
@@ -68,7 +80,7 @@ const AtFeeds = props => {
                 itemIdx !== props.items.length - 1
                   ? h('span', {
                       class: [
-                        'absolute top-4 -ml-px h-full w-0.5 bg-gray-200',
+                        'absolute top-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-400',
                         props.items.some(item => item.type && item.type === 'comment') ? 'left-5' : 'left-4',
                       ],
                       'aria-hidden': true,

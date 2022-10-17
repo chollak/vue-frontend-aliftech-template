@@ -10,7 +10,7 @@ const AtInputLabel = (props, ctx) => {
   };
   const corner =
     'corner' in ctx.slots
-      ? h('span', { class: 'text-sm leading-5 text-gray-500' }, ctx.slots.corner(slotParams))
+      ? h('span', { class: 'text-sm leading-5 text-gray-500 dark:text-gray-300' }, ctx.slots.corner(slotParams))
       : null;
   slotParams = Object.assign(
     {},
@@ -33,8 +33,11 @@ const AtInputLabel = (props, ctx) => {
     'span',
     {
       class: [
-        'text-sm font-medium leading-5 text-gray-700',
-        { 'text-red-600': slotParams.error, 'text-green-500': slotParams.success },
+        'text-sm font-medium leading-5 text-gray-700 dark:text-white',
+        {
+          'text-red-600 dark:text-red-500': slotParams.error,
+          'text-green-600 dark:text-green-500': slotParams.success,
+        },
       ],
     },
     'default' in ctx.slots ? ctx.slots.default(slotParams) : props.title

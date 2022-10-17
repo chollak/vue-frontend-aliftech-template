@@ -11,7 +11,9 @@ const AtTableItem = (props, context) => {
       ? [
           h('div', { class: 'flex items-center' }, [
             h('div', { class: 'min-w-0 flex-1 flex items-center pr-4' }, [node]),
-            h('div', { class: 'text-gray-400' }, [h('fe-chevron-right-icon', { props: { size: '20' } })]),
+            h('div', { class: 'text-gray-400 dark:text-gray-200' }, [
+              h('fe-chevron-right-icon', { props: { size: '20' } }),
+            ]),
           ]),
         ]
       : node;

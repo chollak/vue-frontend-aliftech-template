@@ -1,6 +1,5 @@
 import { h, ref, toRefs, watch, computed, onBeforeMount, defineComponent } from 'vue';
 import { transformToBool, comparisonValues, getIconComponent, deepCopy } from '../../utils';
-import { uiConfig } from '../../';
 
 export default defineComponent({
   name: 'AtSteps',
@@ -55,13 +54,11 @@ export default defineComponent({
                 'span',
                 {
                   class: [
-                    'block text-xs leading-4 font-semibold uppercase group-hover:text-' +
-                      uiConfig.primaryTextColor +
-                      '-800 transition ease-in-out duration-150',
-                    {
-                      ['text-' + uiConfig.primaryTextColor + '-600']: active,
-                      'text-gray-500': !active,
-                    },
+                    'block text-xs leading-4 font-semibold uppercase',
+                    'group-hover:text-primary-800',
+                    'dark:group-hover:text-primary-400',
+                    'transition ease-in-out duration-150',
+                    active ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-300',
                   ],
                 },
                 props.steps[i].title
@@ -69,7 +66,7 @@ export default defineComponent({
             );
           }
           if (subTitle) {
-            elements.push(h('span', { class: 'block text-sm leading-5 font-medium' }, subTitle));
+            elements.push(h('span', { class: 'block text-sm leading-5 font-medium dark:text-white' }, subTitle));
           }
           // Элементы внутри кнопок - END
           let element = elements;
@@ -84,9 +81,8 @@ export default defineComponent({
                       {
                         'mr-3': subTitle,
                         'mr-2': !subTitle,
-                        'text-gray-500': !active,
-                        ['text-' + uiConfig.primaryTextColor + '-600']: active,
                       },
+                      active ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-300',
                     ],
                   },
                   [icon]
@@ -108,16 +104,19 @@ export default defineComponent({
                   },
                   class: [
                     'w-full text-left pl-4 py-2 block border-l-4 transition ease-in-out duration-150 md:pl-0 md:pt-4 md:pb-0 md:border-l-0 md:border-t-4 outline-none focus:outline-none',
-                    {
-                      ['border-' +
-                      uiConfig.primaryBorderColor +
-                      '-600 hover:border-' +
-                      uiConfig.primaryBorderColor +
-                      '-800 focus:border-' +
-                      uiConfig.primaryBorderColor +
-                      '-900']: active,
-                      'border-gray-200 hover:border-gray-300 focus:border-gray-400': !active,
-                    },
+                    active
+                      ? [
+                          'border-primary-600',
+                          'hover:border-primary-800',
+                          'focus:border-primary-900',
+                          'dark:border-primary-400',
+                          'dark:hover:border-primary-300',
+                          'dark:focus:border-primary-700',
+                        ]
+                      : [
+                          'border-gray-200 hover:border-gray-300 focus:border-gray-400',
+                          'dark:border-gray-600 dark:hover:border-gray-500 dark:focus:border-gray-500',
+                        ],
                   ],
                 },
                 element

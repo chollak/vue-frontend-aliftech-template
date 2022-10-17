@@ -7,7 +7,7 @@ export default {
     },
     label: { type: String, default: '' },
     disabled: { type: [Boolean, Number, String], default: false },
-    error: { type: [Boolean, Number, String], default: false },
+    error: { type: [Boolean, Number, String, Array], default: false },
     success: { type: [Boolean, Number, String], default: false },
   },
 };

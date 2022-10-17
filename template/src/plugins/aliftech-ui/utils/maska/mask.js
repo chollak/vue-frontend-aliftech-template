@@ -17,7 +17,7 @@ function processMask(mask) {
 function dynamic(mask) {
   const masks = processMask(mask).sort((a, b) => a.length - b.length);
 
-  return function(value, mask, tokens, masked = true) {
+  return function (value, mask, tokens, masked = true) {
     const processed = masks.map(m => process(value, m, tokens, false));
     const last = processed.pop();
 

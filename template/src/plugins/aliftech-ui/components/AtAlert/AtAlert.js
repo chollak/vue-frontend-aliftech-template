@@ -67,38 +67,43 @@ export default defineComponent({
       switch (props.type) {
         case 'success':
           return {
-            title: 'text-green-800',
-            inner: 'text-green-700',
-            bg: 'bg-green-50',
-            button: 'text-green-500 hover:bg-green-100 focus:bg-green-100',
+            title: 'text-green-800 dark:text-green-300',
+            inner: 'text-green-700 dark:text-green-400',
+            bg: 'bg-green-50 dark:bg-green-500 dark:bg-opacity-20',
+            button:
+              'text-green-500 hover:bg-green-100 focus:bg-green-100 dark:text-white dark:hover:bg-green-400 dark:focus:bg-green-400 dark:hover:bg-opacity-20 dark:focus:bg-opacity-20',
           };
         case 'info':
           return {
-            title: 'text-blue-800',
-            inner: 'text-blue-700',
-            bg: 'bg-blue-50',
-            button: 'text-blue-500 hover:bg-blue-100 focus:bg-blue-100',
+            title: 'text-blue-800 dark:text-blue-300',
+            inner: 'text-blue-700 dark:text-blue-400',
+            bg: 'bg-blue-50 dark:bg-blue-500 dark:bg-opacity-20',
+            button:
+              'text-blue-500 hover:bg-blue-100 focus:bg-blue-100 dark:text-white dark:hover:bg-blue-400 dark:focus:bg-blue-400 dark:hover:bg-opacity-20 dark:focus:bg-opacity-20',
           };
         case 'warning':
           return {
-            title: 'text-yellow-800',
-            inner: 'text-yellow-700',
-            bg: 'bg-yellow-50',
-            button: 'text-yellow-500 hover:bg-yellow-100 focus:bg-yellow-100',
+            title: 'text-yellow-800 dark:text-yellow-300',
+            inner: 'text-yellow-700 dark:text-yellow-400',
+            bg: 'bg-yellow-50 dark:bg-yellow-500 dark:bg-opacity-20',
+            button:
+              'text-yellow-500 hover:bg-yellow-100 focus:bg-yellow-100 dark:text-white dark:hover:bg-yellow-400 dark:focus:bg-yellow-400 dark:hover:bg-opacity-20 dark:focus:bg-opacity-20',
           };
         case 'danger':
           return {
-            title: 'text-red-800',
-            inner: 'text-red-700',
-            bg: 'bg-red-50',
-            button: 'text-red-500 hover:bg-red-100 focus:bg-red-100',
+            title: 'text-red-800 dark:text-red-300',
+            inner: 'text-red-700 dark:text-red-400',
+            bg: 'bg-red-50 dark:bg-red-500 dark:bg-opacity-20',
+            button:
+              'text-red-500 hover:bg-red-100 focus:bg-red-100 dark:text-white dark:hover:bg-red-400 dark:focus:bg-red-400 dark:hover:bg-opacity-20 dark:focus:bg-opacity-20',
           };
         default:
           return {
-            title: 'text-gray-800',
-            inner: 'text-gray-700',
-            bg: 'bg-gray-50',
-            button: 'text-gray-500 hover:bg-gray-100 focus:bg-gray-100',
+            title: 'text-gray-800 dark:text-white',
+            inner: 'text-gray-700 dark:text-gray-300',
+            bg: 'bg-gray-50 dark:bg-gray-100 dark:bg-opacity-10',
+            button:
+              'text-gray-500 hover:bg-gray-100 focus:bg-gray-100 dark:text-white dark:hover:bg-gray-400 dark:focus:bg-gray-400 dark:hover:bg-opacity-20 dark:focus:bg-opacity-20',
           };
       }
     });

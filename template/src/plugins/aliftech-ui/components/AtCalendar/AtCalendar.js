@@ -1,18 +1,12 @@
-import { h, ref, computed, watch, Transition, capitalize, toRefs, defineComponent } from 'vue';
+import { h, ref, computed, watch, Transition, capitalize, toRefs, defineComponent, nextTick } from 'vue';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/outline/esm';
 import { ChevronDownIcon } from '@heroicons/vue/solid/esm';
-import { short as shortWeeks } from '../../constants/weeks';
-import { full as fullMonths, short as shortMonths } from '../../constants/months';
-import { full as fullQuarters } from '../../constants/quarters';
-import { full as fullHalfYears } from '../../constants/halfYears';
-import { uiConfig } from '../../index';
-import { checkType, getDateByHalfYear, getHalfYearByDate, getQuarterByDate } from '../../utils';
+import { checkType, getDateByHalfYear, getHalfYearByDate, getQuarterByDate, getDateByQuarter } from '../../utils';
 import Calendar from '../../mixins/props/Calendar';
-import { getDateByQuarter } from '~/plugins/aliftech-ui/utils/getDateByQuarter';
 
 export default defineComponent({
   name: 'AtCalendar',
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'scroll'],
   props: {
     ...Calendar.props,
     modelValue: { type: [String, Date, Array], default: new Date() },
@@ -29,8 +23,12 @@ export default defineComponent({
     let showMonthYearDropdown = ref(false);
     let selectedDay = ref(null);
     let value = toRefs(props).modelValue;
-    let dateRange = ref([new Date(), new Date()]);
+    let dateRange = ref([]);
+    let startYear = toRefs(props).startYear;
+    let endYear = toRefs(props).endYear;
     // let dateRangeBetweenDays = ref(0);
+    const rangePointsClasses =
+      'after:w-6/12 after:h-full after:absolute after:right-0 after:bg-primary-100 dark:after:bg-primary-500 dark:after:bg-opacity-30';
     //// Properties -END
 
     if (value.value && !props.range) {
@@ -52,15 +50,15 @@ export default defineComponent({
     }
 
     //// Computed properties
+    const isRanged = computed(() => props.range && dateRange.value?.length === 2);
     /**
      * Array of years to select
      * @type {ComputedRef<*[]>}
      */
     const yearsToSelect = computed(() => {
-      let years = [];
-      const currentYear = new Date().getFullYear();
-      for (let i = -5; i < 5; i++) {
-        years.push(currentYear + i);
+      const years = [];
+      for (let year = startYear.value; year <= endYear.value; year++) {
+        years.push(year);
       }
       return years;
     });
@@ -73,20 +71,62 @@ export default defineComponent({
       let days = [];
       const prevMonthDate = new Date(selectedYear.value, currentMonth.value - 1, 0).getDate();
       for (let i = 0; i < monthDays.value[0].weekDay - 1; i++) {
-        days.unshift(prevMonthDate - i);
+        const day = prevMonthDate - i;
+        let prevMonth = currentMonth.value - 1;
+        let year = selectedYear.value;
+        if (prevMonth === 0) {
+          year -= 1;
+          prevMonth = 12;
+        }
+        const date = new Date(`${year}-${prevMonth}-${day}`);
+        days.unshift({
+          number: day,
+          date: date,
+          highlightClasses: props.highlights.find(highlight => compareDays(highlight?.date, date))?.class || null,
+          isSelected: props.range
+            ? dateRange.value.some(rangeDate =>
+                compareDays(`${rangeDate.getFullYear()}-${rangeDate.getMonth() + 1}-${rangeDate.getDate()}`, date)
+              )
+            : day === selectedDay.value && prevMonth === selectedMonth.value && year === selectedYear.value,
+        });
       }
       return days.map(day => {
-        const allowed = isAllowedDate(new Date(selectedYear.value, (currentMonth.value - 2) % 12, day));
+        const allowed = isAllowedDate(new Date(selectedYear.value, (currentMonth.value - 2) % 12, day.number));
         return h(
           'button',
           {
             class: [
-              'transition duration-150 p-2 w-auto text-center',
-              allowed ? 'text-gray-300 hover:text-gray-400' : 'cursor-not-allowed text-gray-200',
+              'transition duration-150 p-1 h-8 w-auto text-center relative flex items-center justify-center opacity-50 -mx-0.5',
+              !allowed && 'cursor-not-allowed text-gray-300 dark:text-gray-600',
+              isRanged.value &&
+                checkDateBetweenDateRange(day.date) &&
+                'bg-primary-100 dark:bg-primary-500 dark:bg-opacity-30',
+              isRanged.value &&
+                !compareDays(dateRange.value[0], dateRange.value[1]) &&
+                ((compareDays(dateRange.value[0], day.date) && `${rangePointsClasses} after:right-0`) ||
+                  (compareDays(dateRange.value[1], day.date) && `${rangePointsClasses} after:left-0`)),
             ],
-            onClick: () => (allowed ? setPrevMonthDate(day) : null),
+            onClick: () => (allowed ? setPrevMonthDate(day.number) : null),
           },
-          day
+          h(
+            'div',
+            {
+              class: [
+                'h-8 w-8 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center z-10',
+                day?.highlightClasses,
+              ],
+            },
+            h(
+              'div',
+              {
+                class: [
+                  'w-full h-full flex items-center justify-center rounded-full min-w-full',
+                  day.isSelected && 'bg-primary-600 dark:bg-primary-500 text-white',
+                ],
+              },
+              h('span', null, day.number)
+            )
+          )
         );
       });
     });
@@ -98,7 +138,24 @@ export default defineComponent({
     const daysAfterCurrentMonthDays = computed(() => {
       let days = [];
       for (let i = 0; i < 7 - monthDays.value[monthDays.value.length - 1].weekDay; i++) {
-        days.push(i + 1);
+        const day = i + 1;
+        let nextMonth = currentMonth.value + 1;
+        let year = selectedYear.value;
+        if (nextMonth > 12) {
+          year += 1;
+          nextMonth = 1;
+        }
+        const date = new Date(`${year}-${nextMonth}-${day}`);
+        days.push({
+          number: day,
+          date: new Date(`${year}-${nextMonth}-${day}`),
+          highlightClasses: props.highlights.find(highlight => compareDays(highlight?.date, date))?.class || null,
+          isSelected: props.range
+            ? dateRange.value.some(rangeDate =>
+                compareDays(`${rangeDate.getFullYear()}-${rangeDate.getMonth() + 1}-${rangeDate.getDate()}`, date)
+              )
+            : day === selectedDay.value && nextMonth === selectedMonth.value && year === selectedYear.value,
+        });
       }
       return days.map(day => {
         let nextMonth = currentMonth.value;
@@ -107,18 +164,43 @@ export default defineComponent({
           yearOfNextMonth++;
           nextMonth = 1;
         }
-        const allowed = isAllowedDate(new Date(yearOfNextMonth, nextMonth, day));
+        const allowed = isAllowedDate(new Date(yearOfNextMonth, nextMonth, day.number));
 
         return h(
           'button',
           {
             class: [
-              'transition duration-150 p-2 w-auto text-center',
-              allowed ? 'text-gray-300 hover:text-gray-400' : 'cursor-not-allowed text-gray-200',
+              'transition duration-150 p-1 h-8 w-auto text-center relative flex items-center justify-center opacity-50 -mx-0.5',
+              !allowed && 'cursor-not-allowed text-gray-300 dark:text-gray-600',
+              isRanged.value &&
+                checkDateBetweenDateRange(day.date) &&
+                'bg-primary-100 dark:bg-primary-500 dark:bg-opacity-30',
+              isRanged.value &&
+                !compareDays(dateRange.value[0], dateRange.value[1]) &&
+                ((compareDays(dateRange.value[0], day.date) && `${rangePointsClasses} after:right-0`) ||
+                  (compareDays(dateRange.value[1], day.date) && `${rangePointsClasses} after:left-0`)),
             ],
-            onClick: () => (allowed ? setNextMonthDate(day) : null),
+            onClick: () => (allowed ? setNextMonthDate(day.number) : null),
           },
-          day
+          h(
+            'div',
+            {
+              class: [
+                'h-8 w-8 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center z-10',
+                day?.highlightClasses,
+              ],
+            },
+            h(
+              'div',
+              {
+                class: [
+                  'w-full h-full flex items-center justify-center rounded-full min-w-full',
+                  day.isSelected && 'bg-primary-600 dark:bg-primary-500 text-white',
+                ],
+              },
+              h('span', null, day.number)
+            )
+          )
         );
       });
     });
@@ -127,7 +209,7 @@ export default defineComponent({
      * @type {ComputedRef<string>}
      */
     const headerTitle = computed(() => {
-      const monthName = fullMonths[currentMonth.value - 1];
+      const monthName = props.locales[props.locale]?.months.full[currentMonth.value - 1] ?? '';
       return `${capitalize(monthName)} ${selectedYear.value}`;
     });
     //// Computed properties - END
@@ -196,6 +278,12 @@ export default defineComponent({
         emit('update:modelValue', date);
       });
     }
+    watch(
+      () => props.highlights,
+      () => {
+        getCurrentMonthDays();
+      }
+    );
 
     //// Watchers - END
 
@@ -219,10 +307,18 @@ export default defineComponent({
       let days = [];
 
       for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(`${selectedYear.value}-${currentMonth.value}-${day}`);
         days.push({
           weekDay: getDayOfDate(day),
-          date: day,
+          number: day,
+          date,
           allowed: isAllowedDate(new Date(selectedYear.value, currentMonth.value - 1, day)),
+          highlightClasses:
+            props.highlights.find(
+              item =>
+                new Date(item?.date).setHours(0, 0, 0, 0) ===
+                new Date(`${currentMonth.value}-${day}-${selectedYear.value}`).setHours(0, 0, 0, 0)
+            )?.class || null,
         });
       }
 
@@ -253,7 +349,7 @@ export default defineComponent({
       for (let quarter = 1; quarter <= 4; quarter++) {
         const { range: date } = getDateByQuarter(quarter, selectedYear.value);
         const allowed = isAllowedDate(date[0]) && isAllowedDate(date[1]);
-        quarters.push({ value: quarter, title: fullQuarters[quarter], allowed });
+        quarters.push({ value: quarter, title: props.locales[props.locale]?.quarters.full[quarter], allowed });
       }
       return quarters;
     };
@@ -267,15 +363,15 @@ export default defineComponent({
       for (let halfYear = 1; halfYear <= 2; halfYear++) {
         const { range: date } = getDateByHalfYear(halfYear, selectedYear.value);
         const allowed = isAllowedDate(date[0]) && isAllowedDate(date[1]);
-        halfYears.push({ value: halfYear, title: fullHalfYears[halfYear], allowed });
+        halfYears.push({ value: halfYear, title: props.locales[props.locale]?.halfYears.full[halfYear], allowed });
       }
       return halfYears;
     };
 
     const getPickerButtonClasses = condition => {
       return condition
-        ? 'bg-' + uiConfig.primaryBackgroundColor + '-600 text-white'
-        : 'text-gray-700 hover:bg-gray-100 active:bg-gray-300';
+        ? `bg-primary-600 dark:bg-primary-500 text-white`
+        : 'text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-300 dark:active:bg-gray-900';
     };
 
     //// Internal handlers - END
@@ -293,6 +389,7 @@ export default defineComponent({
         currentMonth.value--;
       }
       selectedDay.value = day;
+      emit('scroll', new Date(selectedYear.value, currentMonth.value - 1, 1));
       getCurrentMonthDays();
     };
 
@@ -308,6 +405,7 @@ export default defineComponent({
         currentMonth.value++;
       }
       selectedDay.value = day;
+      emit('scroll', new Date(selectedYear.value, currentMonth.value - 1, 1));
       getCurrentMonthDays();
     };
 
@@ -335,6 +433,8 @@ export default defineComponent({
             emit('update:modelValue', new Date(selectedYear.value, currentMonth.value - 1, selectedDay.value));
           }
         }
+
+        emit('scroll', new Date(selectedYear.value, currentMonth.value - 1, 1));
       }
     };
 
@@ -362,6 +462,8 @@ export default defineComponent({
             emit('update:modelValue', new Date(selectedYear.value, currentMonth.value - 1, selectedDay.value));
           }
         }
+
+        emit('scroll', new Date(selectedYear.value, currentMonth.value - 1, 1));
       }
     };
 
@@ -407,7 +509,7 @@ export default defineComponent({
      */
     const setCurrentDateDay = day => {
       selectedMonth.value = currentMonth.value;
-      selectedDay.value = day.date;
+      selectedDay.value = day;
     };
 
     const setDateRange = (day, month, year) => {
@@ -415,59 +517,82 @@ export default defineComponent({
         dateRange.value = [];
       }
       if (!dateRange.value[0] && !dateRange.value[1]) {
-        dateRange.value[0] = new Date(year, month, day.date);
+        dateRange.value[0] = new Date(year, month, day);
       } else if (dateRange.value[0] && !dateRange.value[1]) {
-        dateRange.value[1] = new Date(year, month, day.date);
+        dateRange.value[1] = new Date(year, month, day);
       }
     };
 
-    const checkDayBetweenDateRange = day => {
-      const date = new Date(selectedYear.value, currentMonth.value - 1, day.date);
-      return (
-        date > new Date(dateRange.value[0]) &&
-        date.getMonth() === currentMonth.value - 1 &&
-        date < new Date(dateRange.value[1]) &&
-        date.getMonth() === currentMonth.value - 1
-      );
+    const checkDateBetweenDateRange = date => {
+      const currentDate = new Date(new Date(date).setHours(0, 0, 0, 0));
+      const dateFrom = new Date(new Date(dateRange.value[0]).setHours(0, 0, 0, 0));
+      const dateTo = new Date(new Date(dateRange.value[1]).setHours(0, 0, 0, 0));
+
+      return currentDate > dateFrom && currentDate < dateTo;
     };
+
+    const compareDays = (firstDay, secondDay) =>
+      new Date(firstDay).setHours(0, 0, 0, 0) === new Date(secondDay).setHours(0, 0, 0, 0);
 
     const renderPickerTemplateByType = () => {
       if (props.type === 'date') {
         return h('div', { class: 'grid grid-cols-7 gap-1' }, [
           daysBeforeCurrentMonthDays.value,
           monthDays.value.map(day => {
+            const isSelected = props.range
+              ? dateRange.value.some(date =>
+                  compareDays(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`, day.date)
+                )
+              : day.number === selectedDay.value &&
+                selectedMonth.value === currentMonth.value &&
+                selectedYear.value === currentYear.value;
+
             return h(
               'button',
               {
                 class: [
-                  'transition duration-150 p-1 w-auto text-center rounded-md',
-                  day.allowed
-                    ? getPickerButtonClasses(
-                        props.range
-                          ? dateRange.value.some(
-                              date =>
-                                date.getDate() === day.date &&
-                                date.getMonth() + 1 === currentMonth.value &&
-                                date.getFullYear() === selectedYear.value
-                            )
-                          : day.date === selectedDay.value &&
-                              selectedMonth.value === currentMonth.value &&
-                              selectedYear.value === currentYear.value
-                      )
-                    : 'cursor-not-allowed text-gray-200',
-                  checkDayBetweenDateRange(day) ? 'bg-' + uiConfig.primaryBackgroundColor + '-100' : '',
+                  'transition duration-150 p-1 h-8 w-auto text-center relative flex items-center justify-center relative -mx-0.5 text-gray-900',
+                  !day.allowed && 'cursor-not-allowed opacity-40',
+                  isRanged.value &&
+                    checkDateBetweenDateRange(day.date) &&
+                    'bg-primary-100 dark:bg-primary-500 dark:bg-opacity-30',
+                  isRanged.value &&
+                    !compareDays(dateRange.value[0], dateRange.value[1]) &&
+                    ((compareDays(dateRange.value[0], day.date) && `${rangePointsClasses} after:right-0`) ||
+                      (compareDays(dateRange.value[1], day.date) && `${rangePointsClasses} after:left-0`)),
                 ],
                 onClick: () => {
                   if (day.allowed) {
                     if (props.range) {
-                      setDateRange(day, currentMonth.value - 1, selectedYear.value);
+                      setDateRange(day.number, currentMonth.value - 1, selectedYear.value);
                       return;
                     }
-                    setCurrentDateDay(day);
+                    setCurrentDateDay(day.number);
                   }
                 },
               },
-              day.date
+              h(
+                'div',
+                {
+                  class: [
+                    'h-8 w-8 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center z-10 hover:text-gray-900',
+                    day?.highlightClasses,
+                  ],
+                  style: {
+                    minWidth: '2rem',
+                  },
+                },
+                h(
+                  'div',
+                  {
+                    class: [
+                      'w-full h-full flex items-center justify-center rounded-full min-w-full',
+                      isSelected && 'bg-primary-600 dark:bg-primary-500 text-white',
+                    ],
+                  },
+                  h('span', null, day.number)
+                )
+              )
             );
           }),
           daysAfterCurrentMonthDays.value,
@@ -475,7 +600,7 @@ export default defineComponent({
       }
       if (props.type === 'month') {
         return h('div', { class: 'grid grid-cols-3 gap-1' }, [
-          fullMonths.map((month, index) => {
+          props.locales[props.locale]?.months.full.map((month, index) => {
             const allowed = isAllowedDate(new Date(selectedYear.value, index, 1));
 
             return h(
@@ -487,7 +612,7 @@ export default defineComponent({
                     ? getPickerButtonClasses(
                         index + 1 === currentMonth.value && selectedYear.value === currentYear.value
                       )
-                    : 'cursor-not-allowed text-gray-200',
+                    : 'cursor-not-allowed text-gray-200 dark:text-gray-500',
                 ],
                 onClick: () => (allowed ? setMonth(index) : null),
               },
@@ -507,7 +632,7 @@ export default defineComponent({
                   'transition duration-150 p-1 w-auto text-center rounded-md',
                   year.allowed
                     ? getPickerButtonClasses(year.value === currentYear.value)
-                    : 'cursor-not-allowed text-gray-200',
+                    : 'cursor-not-allowed text-gray-200 dark:text-gray-500',
                 ],
                 onClick: () => (year.allowed ? setYear(year.value) : null),
               },
@@ -529,7 +654,7 @@ export default defineComponent({
                     ? getPickerButtonClasses(
                         quarter.value === selectedQuarter.value && currentYear.value === selectedYear.value
                       )
-                    : 'cursor-not-allowed text-gray-200',
+                    : 'cursor-not-allowed text-gray-200 dark:text-gray-500',
                 ],
                 onClick: () => (quarter.allowed ? setQuarter(quarter.value) : null),
               },
@@ -551,7 +676,7 @@ export default defineComponent({
                     ? getPickerButtonClasses(
                         halfYear.value === selectedHalfYear.value && currentYear.value === selectedYear.value
                       )
-                    : 'cursor-not-allowed text-gray-200',
+                    : 'cursor-not-allowed text-gray-200 dark:text-gray-500',
                 ],
                 onClick: () => (halfYear.allowed ? setHalfYear(halfYear.value) : null),
               },
@@ -566,6 +691,22 @@ export default defineComponent({
     if (props.type === 'date') {
       getCurrentMonthDays();
     }
+
+    const yearsDropdownRef = ref(null);
+    const currentYearRef = ref(null);
+
+    /**
+     * Toggle years dropdown and scroll to current year
+     * @returns {void}
+     */
+    const toggleMonthYearDropdown = () => {
+      showMonthYearDropdown.value = !showMonthYearDropdown.value;
+      nextTick(() => {
+        if (yearsDropdownRef.value && showMonthYearDropdown.value && currentYearRef.value) {
+          yearsDropdownRef.value.scrollTop = currentYearRef.value.offsetTop - yearsDropdownRef.value.clientHeight / 2;
+        }
+      });
+    };
 
     return {
       monthDays,
@@ -585,20 +726,25 @@ export default defineComponent({
       daysBeforeCurrentMonthDays,
       daysAfterCurrentMonthDays,
       setCurrentDateDay,
+      yearsDropdownRef,
+      currentYearRef,
+      toggleMonthYearDropdown,
     };
   },
   render() {
-    return h('div', { class: 'block w-full h-full' }, [
+    return h('div', { class: 'block w-full h-full bg-white dark:bg-gray-700 overflow-hidden' }, [
       h(
         'div',
         {
-          class: 'flex justify-between items-center h-12 border-b-2 border-gray-200 mb-1',
+          class:
+            'flex justify-between items-center h-12 border-b-2 border-gray-200 dark:border-gray-500 dark:border-opacity-30 mb-1',
         },
         [
           h(
             'button',
             {
-              class: 'p-2 transition duration-150 rounded-md text-gray-700 hover:bg-gray-100',
+              class:
+                'p-2 transition duration-150 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
               onClick: () => {
                 if (this.type === 'year') {
                   this.setYear(this.selectedYear - 3, false);
@@ -611,15 +757,16 @@ export default defineComponent({
                 }
               },
             },
-            [h(ChevronLeftIcon, { class: 'h-5 w-5 text-gray-700' })]
+            [h(ChevronLeftIcon, { class: 'h-5 w-5 text-gray-700 dark:text-gray-300' })]
           ),
           this.type === 'date'
             ? h('div', { class: 'relative' }, [
                 h(
                   'button',
                   {
-                    class: 'transition duration-150 font-semibold hover:bg-gray-100 p-1 px-3 rounded-md',
-                    onClick: () => (this.showMonthYearDropdown = !this.showMonthYearDropdown),
+                    class:
+                      'transition duration-150 font-semibold hover:bg-gray-100 p-1 px-3 rounded-md dark:text-white dark:hover:bg-gray-800',
+                    onClick: () => this.toggleMonthYearDropdown(),
                   },
                   [
                     h('span', { class: 'flex items-center' }, [
@@ -652,25 +799,26 @@ export default defineComponent({
                             'div',
                             {
                               class:
-                                'transition duration-150 w-full absolute flex justify-center mt-1 py-2 border-2 border-gray-200 rounded-md bg-white shadow-lg mx-auto',
+                                'transition duration-150 w-full absolute flex justify-center mt-1 py-2 border-2 border-gray-200 dark:border-gray-500 rounded-md bg-white dark:bg-gray-700 shadow-lg mx-auto z-20',
                             },
                             [
                               h('div', { class: 'grid grid-cols-2 items-center justify-center' }, [
                                 h(
                                   'div',
                                   {
-                                    class: 'max-h-48 overflow-x-hidden overflow-y-auto border-r-2 border-gray-200 px-2',
+                                    class:
+                                      'max-h-48 overflow-x-hidden overflow-y-auto border-r-2 border-gray-200 dark:border-gray-500 px-2',
                                   },
                                   [
-                                    shortMonths.map((month, index) =>
+                                    this.locales[this.locale]?.months.short.map((month, index) =>
                                       h(
                                         'button',
                                         {
                                           class: [
                                             'p-0.5',
                                             index + 1 === this.currentMonth
-                                              ? 'text-' + uiConfig.primaryTextColor + '-600 font-bold'
-                                              : 'text-gray-700 hover:text-gray-900',
+                                              ? `text-primary-600 dark:text-primary-400 font-bold`
+                                              : 'text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100',
                                           ],
                                           onClick: () => this.setMonth(index, false),
                                         },
@@ -679,23 +827,28 @@ export default defineComponent({
                                     ),
                                   ]
                                 ),
-                                h('div', { class: 'max-h-48 overflow-x-hidden overflow-y-auto px-2' }, [
-                                  this.yearsToSelect.map(year =>
-                                    h(
-                                      'button',
-                                      {
-                                        class: [
-                                          'p-0.5',
-                                          year === this.selectedYear
-                                            ? 'text-' + uiConfig.primaryTextColor + '-600 font-bold'
-                                            : 'text-gray-700 hover:text-gray-900',
-                                        ],
-                                        onClick: () => this.setYear(year, false),
-                                      },
-                                      year
-                                    )
-                                  ),
-                                ]),
+                                h(
+                                  'div',
+                                  { class: 'max-h-48 overflow-x-hidden overflow-y-auto px-2', ref: 'yearsDropdownRef' },
+                                  [
+                                    this.yearsToSelect.map(year =>
+                                      h(
+                                        'button',
+                                        {
+                                          ref: year === this.currentYear ? 'currentYearRef' : null,
+                                          class: [
+                                            'p-0.5',
+                                            year === this.selectedYear
+                                              ? `text-primary-600 dark:text-primary-400 font-bold`
+                                              : 'text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100',
+                                          ],
+                                          onClick: () => this.setYear(year, false),
+                                        },
+                                        year
+                                      )
+                                    ),
+                                  ]
+                                ),
                               ]),
                             ]
                           )
@@ -705,14 +858,15 @@ export default defineComponent({
               ])
             : h(
                 'span',
-                { class: 'font-semibold p-1 px-3 rounded-md' },
+                { class: 'font-semibold p-1 px-3 rounded-md dark:text-white' },
                 this.type === 'year' ? this.currentYear : this.selectedYear
               ),
 
           h(
             'button',
             {
-              class: 'p-2 transition duration-150 rounded-md text-gray-700 hover:bg-gray-100',
+              class:
+                'p-2 transition duration-150 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800',
               onClick: () => {
                 if (this.type === 'year') {
                   this.setYear(this.selectedYear + 3, false);
@@ -726,14 +880,16 @@ export default defineComponent({
                 // this.type !== 'date' ? this.setNextYear() : this.setNextMonthDate();
               },
             },
-            [h(ChevronRightIcon, { class: 'h-5 w-5 text-gray-700' })]
+            [h(ChevronRightIcon, { class: 'h-5 w-5 text-gray-700 dark:text-gray-300' })]
           ),
         ]
       ),
 
       this.type === 'date'
         ? h('div', { class: 'grid grid-cols-7 gap-1' }, [
-            shortWeeks.map(weekDay => h('span', { class: 'text-gray-400 p-2 w-auto text-center' }, weekDay)),
+            this.locales[this.locale]?.weeks.short.map(weekDay =>
+              h('span', { class: 'text-gray-400 dark:text-gray-300 p-2 w-auto text-center' }, weekDay)
+            ),
           ])
         : null,
       this.renderPickerTemplateByType(),

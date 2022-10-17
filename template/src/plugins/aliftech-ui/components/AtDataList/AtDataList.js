@@ -1,5 +1,5 @@
 import { h, toRefs, ref, watch, resolveDirective, withDirectives, defineComponent } from 'vue';
-import { debounce, deepCopy } from '../../utils';
+import { debounce, deepCopy, transformToBool } from '../../utils';
 
 import AtInput from '../AtInput/AtInput';
 import { clickOutside } from '../../mixins/directives/clickOutside';
@@ -30,10 +30,11 @@ export default defineComponent({
     const value = ref('');
     const modelValue = toRefs(props).modelValue;
 
+    setNewValue();
+
     watch(
       [data, value],
       () => {
-        showDataList.value = !!value.value.length;
         if (value.value.length) {
           sortedDataObj.value = props.data.filter(item => {
             return item[props.valueToPrint].toLowerCase().includes(value.value.toLowerCase());
@@ -58,12 +59,22 @@ export default defineComponent({
       }, 500)
     );
 
-    function clickOutsideHandler() {
+    function setNewValue() {
+      showDataList.value = !!value.value.length;
+      const newValue = data.value.find(item => String(item[props.valueType]) === String(modelValue.value));
+      value.value = newValue ? newValue[props.valueToPrint] : modelValue.value;
       showDataList.value = false;
     }
 
+    function clickOutsideHandler() {
+      if (showDataList.value) {
+        showDataList.value = false;
+        setNewValue();
+      }
+    }
+
     function showDataListHandler() {
-      showDataList.value = !!value.value.length;
+      showDataList.value = true;
     }
 
     function setItem(item) {
@@ -81,15 +92,18 @@ export default defineComponent({
           type: 'search',
           modelValue: this.value,
           placeholder: this.placeholder,
-          disabled: this.disabled,
+          disabled: transformToBool(this.disabled),
           error: this.error,
           iconBefore: this.iconBefore,
           iconAfter: this.iconAfter,
           success: this.success,
           'onUpdate:modelValue': value => {
             this.value = value;
+            if (value === '') {
+              this.$emit('update:modelValue', value);
+            }
           },
-          'onUpdate:onFocus': () => {
+          onFocus: () => {
             this.showDataListHandler();
           },
         }),
@@ -100,17 +114,17 @@ export default defineComponent({
             'div',
             {
               class:
-                'absolute w-full mt-2 py-2 border-2 border-gray-200 rounded-md bg-white max-h-80 overflow-y-auto shadow-lg z-50',
+                'absolute w-full mt-2 py-2 border-2 border-gray-200 rounded-md bg-white max-h-80 overflow-y-auto shadow-lg z-50 dark:bg-gray-700 dark:border-gray-600',
             },
             [
               this.sortedDataObj.length
-                ? h('ul', { class: 'divide-y divide-gray-200' }, [
+                ? h('ul', { class: 'divide-y divide-gray-200 dark:divide-gray-600' }, [
                     this.sortedDataObj.map(item =>
                       h(
                         'li',
                         {
                           class: [
-                            'block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100',
+                            'block px-4 py-2 text-sm text-gray-700 cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-white dark:hover:text-white dark:hover:bg-gray-800',
                           ],
                           onClick: () => this.setItem(item),
                         },

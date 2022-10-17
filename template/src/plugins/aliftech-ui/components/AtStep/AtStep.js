@@ -6,7 +6,7 @@ const AtStep = (props, context) => {
         'div',
         Object.assign(
           {
-            class: ['block'].concat(
+            class: ['block dark:text-gray-200'].concat(
               'class' in context.attrs ? context.attrs.class : '',
               'staticClass' in context.attrs ? context.attrs.staticClass : ''
             ),

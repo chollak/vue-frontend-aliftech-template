@@ -7,7 +7,7 @@ const AtInputAddOn = (props, { slots }) => {
     'div',
     {
       class: [
-        { 'border border-gray-300': childType !== 'AtButton' },
+        { 'border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700': childType !== 'AtButton' },
         'inline-flex items-center sm:text-sm',
         props.side === 'left' ? 'rounded-l-md border-r-0' : 'rounded-r-md border-l-0',
         { 'px-3': childType !== 'AtButton' && !props.select },

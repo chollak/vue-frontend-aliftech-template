@@ -6,12 +6,12 @@ const AtInputHelp = (props, context) => {
         props.tag,
         Object.assign({}, context.attrs, {
           class: [
-            'text-sm',
+            'text-sm dark:text-white',
             props.mt,
             {
-              'text-red-600': props.type === 'error',
-              'text-green-500': props.type === 'success',
-              'text-gray-600': props.type === 'muted',
+              'text-red-600 dark:text-red-500': props.type === 'error',
+              'text-green-500 dark:text-green-400': props.type === 'success',
+              'text-gray-600 dark:text-white': props.type === 'muted',
             },
           ].concat('class' in context.attrs ? context.attrs.class : ''),
         }),

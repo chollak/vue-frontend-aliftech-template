@@ -1,85 +1,50 @@
-import { uiConfig } from '../../../';
-
-const primaryButtonClasses = (isLoading, isDisabled) => {
-  switch (uiConfig.primaryBackgroundColor) {
-    case 'indigo':
-      return isLoading || isDisabled
-        ? 'bg-indigo-400'
-        : 'bg-indigo-600 hover:bg-indigo-500 focus:bg-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700';
-    case 'blue':
-      return isLoading || isDisabled
-        ? 'bg-blue-400'
-        : 'bg-blue-600 hover:bg-blue-500 focus:bg-blue-700 focus:shadow-outline-blue active:bg-blue-700';
-    case 'red':
-      return isLoading || isDisabled
-        ? 'bg-red-400'
-        : 'bg-red-600 hover:bg-red-500 focus:bg-red-700 focus:shadow-outline-red active:bg-red-700';
-    case 'yellow':
-      return isLoading || isDisabled
-        ? 'bg-yellow-400'
-        : 'bg-yellow-600 hover:bg-yellow-500 focus:bg-yellow-700 focus:shadow-outline-yellow active:bg-yellow-700';
-    case 'green':
-      return isLoading || isDisabled
-        ? 'bg-green-400'
-        : 'bg-green-600 hover:bg-green-500 focus:bg-green-700 focus:shadow-outline-green active:bg-green-700';
-    default:
-      return isLoading || isDisabled
-        ? 'bg-indigo-400'
-        : 'bg-indigo-600 hover:bg-indigo-500 focus:bg-indigo-700 focus:shadow-outline-indigo active:bg-indigo-700';
-  }
-};
-
 export const getColor = (color, loading = false, disabled = false) => {
   switch (color) {
     case 'primary':
-      return `border-transparent text-white ${primaryButtonClasses(loading, disabled)}`;
+      return `border-transparent text-white ${
+        loading || disabled
+          ? 'bg-primary-400 text-opacity-90'
+          : 'bg-primary-600 hover:bg-primary-500 ' +
+            'focus:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ' +
+            'dark:bg-primary-500 dark:focus:bg-primary-600 dark:hover:bg-primary-600 dark:focus:ring-offset-gray-900'
+      }`;
     case 'secondary':
       return `border-transparent  ${
         loading || disabled
-          ? 'text-' + uiConfig.primaryTextColor + '-400 bg-' + uiConfig.primaryBackgroundColor + '-50'
-          : 'text-' +
-            uiConfig.primaryTextColor +
-            '-700 bg-' +
-            uiConfig.primaryBackgroundColor +
-            '-100 hover:bg-' +
-            uiConfig.primaryBackgroundColor +
-            '-50 focus:border-' +
-            uiConfig.primaryBorderColor +
-            '-300 focus:shadow-outline-' +
-            uiConfig.primaryBoxShadowColor +
-            ' active:bg-' +
-            uiConfig.primaryBackgroundColor +
-            '-200'
+          ? 'text-primary-400 bg-primary-50 dark:bg-primary-400 dark:bg-opacity-20'
+          : 'text-primary-700 bg-primary-100 hover:bg-primary-50 focus:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 ' +
+            'dark:text-primary-300 dark:bg-primary-500 dark:bg-opacity-20 dark:hover:bg-primary-600 dark:hover:bg-opacity-50 dark:focus:bg-primary-400 dark:focus:bg-opacity-20 dark:focus:ring-offset-gray-900'
       }`;
     case 'danger':
       return `border-transparent text-white ${
         loading || disabled
           ? 'bg-red-400'
-          : 'bg-red-500 hover:bg-red-400 focus:border-red-600 focus:shadow-outline-red active:bg-red-600'
+          : 'bg-red-500 hover:bg-red-400 focus:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 dark:focus:ring-offset-gray-900'
       }`;
     case 'success':
       return `border-transparent text-white ${
         loading || disabled
           ? 'bg-green-400'
-          : 'bg-green-500 hover:bg-green-400 focus:border-green-600 focus:shadow-outline-green active:bg-green-600'
+          : 'bg-green-500 hover:bg-green-400 focus:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 dark:focus:ring-offset-gray-900'
       }`;
     case 'warning':
       return `border-transparent ${
         loading || disabled
           ? 'text-gray-500 bg-yellow-200'
-          : 'text-black bg-yellow-300 hover:bg-yellow-200 focus:border-yellow-400 focus:shadow-outline-yellow active:bg-yellow-400'
+          : 'text-black bg-yellow-300 hover:bg-yellow-200 focus:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-200 dark:focus:ring-offset-gray-900'
       }`;
     case 'white':
       return `border-gray-300 ${
         loading || disabled
           ? 'text-gray-400 bg-gray-50'
-          : 'text-gray-700 bg-white hover:text-gray-500 focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50'
+          : 'text-gray-700 bg-white hover:text-gray-500 focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-600 dark:focus:ring-offset-gray-900'
       }`;
     default:
-      return `border-gray-300 text-gray-700 ${
+      return `border-gray-300 dark:border-gray-600 ${
         loading || disabled
-          ? 'text-gray-400 bg-gray-50'
-          : 'text-gray-700 bg-white hover:text-gray-500 focus:border-blue-300 focus:shadow-outline-blue active:text-gray-800 active:bg-gray-50'
+          ? 'text-gray-400 dark:text-gray-200 bg-gray-50 dark:bg-gray-600'
+          : 'text-gray-700 bg-white hover:text-gray-500 focus:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 ' +
+            'dark:text-white dark:bg-gray-700 dark:hover:text-gray-200 dark:hover:bg-opacity-50 dark:focus:bg-opacity-60 dark:focus:ring-offset-gray-900'
       }`;
   }
 };

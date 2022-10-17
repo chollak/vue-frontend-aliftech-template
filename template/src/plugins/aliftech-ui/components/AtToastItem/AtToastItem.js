@@ -13,22 +13,22 @@ const types = {
   success: {
     icon: 'CheckCircle',
     Iconcolor: 'text-green-400',
-    textColor: 'text-gray-900',
+    textColor: 'text-gray-900 dark:text-white',
   },
   error: {
     icon: 'ExclamationCircle',
     Iconcolor: 'text-red-400',
-    textColor: 'text-gray-900',
+    textColor: 'text-gray-900 dark:text-white',
   },
   info: {
     icon: 'InformationCircle',
     Iconcolor: 'text-blue-400',
-    textColor: 'text-gray-900',
+    textColor: 'text-gray-900 dark:text-white',
   },
   warning: {
     icon: 'Exclamation',
     Iconcolor: 'text-yellow-300',
-    textColor: 'text-gray-900',
+    textColor: 'text-gray-900 dark:text-white',
   },
 };
 
@@ -38,7 +38,7 @@ const Toast = props => {
     'div',
     {
       class:
-        'max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden',
+        'max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden dark:bg-gray-700',
     },
     [
       h('div', { class: 'p-4' }, [
@@ -49,14 +49,14 @@ const Toast = props => {
               'p',
               { class: 'text-sm font-medium' },
               {
-                default: () => props.title,
+                default: () => [props.title],
               }
             ),
             h(
               'p',
               { class: 'mt-1 text-sm opacity-90' },
               {
-                default: () => props.subTitle,
+                default: () => [props.subTitle],
               }
             ),
           ]),
@@ -64,8 +64,10 @@ const Toast = props => {
             h(
               'button',
               {
-                class:
-                  'rounded-md inline-flex text-gray-300 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500',
+                class: [
+                  'rounded-md inline-flex text-gray-300 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500',
+                  'dark:text-gray-400 dark:hover:text-gray-200 focus:ring-gray-300',
+                ],
                 onClick: () => methods.remove(props.id),
               },
               [
@@ -87,8 +89,8 @@ const Toast = props => {
 };
 
 Toast.props = {
-  title: { type: String, default: '' },
-  subTitle: { type: String, default: '' },
+  title: { type: [String, Array, Object], default: '' },
+  subTitle: { type: [String, Array, Object], default: '' },
   id: { type: String, required: true },
   type: { type: String, default: 'info' },
   duration: { type: Number, default: 0 },
