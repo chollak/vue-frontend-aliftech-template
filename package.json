@@ -1,6 +1,6 @@
 {
   "name": "at-vue-cli-template-webpack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Shukur Sapaev",
   "description": "A full-featured Webpack setup with hot-reload, lint-on-save, unit testing & css extraction.[WIP]",
   "devDependencies": {
